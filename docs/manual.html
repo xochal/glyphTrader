@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>glyphTrader User Guide</title>
+<style>
+  /* ===== PAGE SETUP ===== */
+  @page {
+    size: letter;
+    margin: 0.7in 0.65in 0.8in 0.65in;
+    @bottom-center {
+      content: counter(page);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 8pt;
+      color: #888;
+    }
+  }
+
+  @page :first {
+    @bottom-center { content: none; }
+    margin: 0;
+  }
+
+  @page cover {
+    @bottom-center { content: none; }
+    margin: 0;
+  }
+
+  @page toc {
+    @bottom-center { content: none; }
+  }
+
+  @page backcover {
+    @bottom-center { content: none; }
+    margin: 0;
+  }
+
+  /* ===== BASE STYLES ===== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-size: 9.5pt;
+  }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    color: #e0e0e0;
+    background: #1a1a2e;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover-page {
+    page: cover;
+    width: 100%;
+    height: 9.5in;
+    background: linear-gradient(160deg, #0f0f23 0%, #1a1a2e 35%, #16213e 70%, #0f3460 100%);
+    text-align: center;
+    page-break-after: always;
+    padding: 3in 1.5in 2in 1.5in;
+  }
+
+  .cover-logo {
+    font-size: 52pt;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 0.15em;
+    color: #00d4aa;
+  }
+
+  .cover-subtitle {
+    font-size: 18pt;
+    color: #8892b0;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 2em;
+  }
+
+  .cover-line {
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00d4aa, transparent);
+    margin: 0 auto 2em;
+  }
+
+  .cover-title {
+    font-size: 28pt;
+    font-weight: 600;
+    color: #ccd6f6;
+    margin-bottom: 0.3em;
+  }
+
+  .cover-version {
+    font-size: 14pt;
+    color: #00d4aa;
+    font-weight: 500;
+    margin-bottom: 0.3em;
+  }
+
+  .cover-date {
+    font-size: 12pt;
+    color: #8892b0;
+    margin-bottom: 2.5em;
+  }
+
+  .cover-authors {
+    font-size: 11pt;
+    color: #8892b0;
+    line-height: 1.8;
+  }
+
+  .cover-authors strong {
+    color: #ccd6f6;
+  }
+
+  /* ===== TABLE OF CONTENTS ===== */
+  .toc-page {
+    page: toc;
+    page-break-after: always;
+    padding-top: 0.5in;
+  }
+
+  .toc-page h2 {
+    font-size: 18pt;
+    color: #00d4aa;
+    margin-bottom: 0.5em;
+    border-bottom: 2px solid #00d4aa33;
+    padding-bottom: 0.2em;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .toc-list li {
+    padding: 3px 0;
+    border-bottom: 1px dotted #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .toc-list li a {
+    color: #ccd6f6;
+    text-decoration: none;
+    font-size: 9.5pt;
+  }
+
+  .toc-list li a:hover {
+    color: #00d4aa;
+  }
+
+  .toc-list .toc-section {
+    font-weight: 600;
+    font-size: 10pt;
+    color: #e0e0e0;
+    padding-top: 6px;
+  }
+
+  .toc-list .toc-subsection {
+    padding-left: 1.5em;
+    font-size: 9pt;
+    color: #a0a8c0;
+  }
+
+  .toc-list .toc-appendix {
+    font-weight: 600;
+    padding-top: 6px;
+    color: #e0e0e0;
+  }
+
+  /* ===== HEADINGS ===== */
+  h1 {
+    font-size: 20pt;
+    color: #00d4aa;
+    margin-top: 0;
+    margin-bottom: 0.4em;
+    padding-bottom: 0.2em;
+    border-bottom: 2px solid #00d4aa44;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    font-size: 13pt;
+    color: #00b4d8;
+    margin-top: 0.9em;
+    margin-bottom: 0.35em;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 11pt;
+    color: #48cae4;
+    margin-top: 0.7em;
+    margin-bottom: 0.3em;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 10pt;
+    color: #90e0ef;
+    margin-top: 0.6em;
+    margin-bottom: 0.2em;
+    page-break-after: avoid;
+  }
+
+  /* ===== CONTENT ===== */
+  .chapter {
+    page-break-before: always;
+  }
+
+  .chapter:first-of-type {
+    page-break-before: auto;
+  }
+
+  p {
+    margin-bottom: 0.5em;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  ul, ol {
+    margin-bottom: 0.5em;
+    padding-left: 1.3em;
+  }
+
+  li {
+    margin-bottom: 0.15em;
+  }
+
+  strong {
+    color: #ccd6f6;
+    font-weight: 600;
+  }
+
+  em {
+    color: #a8b2d1;
+  }
+
+  code {
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", "Consolas", monospace;
+    background: #0d1b2a;
+    color: #00d4aa;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background: #0d1b2a;
+    border: 1px solid #1e3a5f;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 0.5em;
+    overflow-x: auto;
+    font-size: 8pt;
+    line-height: 1.4;
+    page-break-inside: avoid;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* ===== SCREENSHOTS ===== */
+  .screenshot-container {
+    margin: 0.6em 0 0.8em;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+
+  .screenshot-container img {
+    max-width: 85%;
+    max-height: 3.5in;
+    border: 1px solid #2a2a4a;
+    border-radius: 4px;
+  }
+
+  .screenshot-container.large img {
+    max-height: 5in;
+  }
+
+  .screenshot-caption {
+    font-size: 8pt;
+    color: #8892b0;
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.6em;
+    font-size: 8.5pt;
+    page-break-inside: avoid;
+  }
+
+  thead th {
+    background: #16213e;
+    color: #00d4aa;
+    padding: 4px 7px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #00d4aa44;
+    font-size: 8.5pt;
+  }
+
+  tbody td {
+    padding: 3px 7px;
+    border-bottom: 1px solid #1e2a3a;
+    vertical-align: top;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #0f1628;
+  }
+
+  tbody tr:nth-child(odd) {
+    background: #1a1a2e;
+  }
+
+  /* ===== INFO BOXES ===== */
+  .info-box {
+    background: #0d2137;
+    border-left: 3px solid #00b4d8;
+    padding: 6px 12px;
+    margin: 0.5em 0;
+    border-radius: 0 4px 4px 0;
+    page-break-inside: avoid;
+    font-size: 9pt;
+  }
+
+  .info-box.warning {
+    border-left-color: #ffd166;
+    background: #2a1f0d;
+  }
+
+  .info-box.danger {
+    border-left-color: #ef476f;
+    background: #2a0d15;
+  }
+
+  .info-box.success {
+    border-left-color: #06d6a0;
+    background: #0d2a1f;
+  }
+
+  .info-box p {
+    margin-bottom: 0.3em;
+  }
+
+  .info-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-box .label {
+    font-weight: 700;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .info-box.warning .label { color: #ffd166; }
+  .info-box.danger .label { color: #ef476f; }
+  .info-box.success .label { color: #06d6a0; }
+  .info-box .label { color: #00b4d8; }
+
+  /* ===== BADGE STYLES ===== */
+  .badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-green { background: #06d6a022; color: #06d6a0; border: 1px solid #06d6a044; }
+  .badge-yellow { background: #ffd16622; color: #ffd166; border: 1px solid #ffd16644; }
+  .badge-red { background: #ef476f22; color: #ef476f; border: 1px solid #ef476f44; }
+  .badge-blue { background: #00b4d822; color: #00b4d8; border: 1px solid #00b4d844; }
+  .badge-gray { background: #8892b022; color: #8892b0; border: 1px solid #8892b044; }
+
+  /* ===== BACK COVER ===== */
+  .back-cover {
+    page: backcover;
+    page-break-before: always;
+    width: 100%;
+    height: 9.5in;
+    background: linear-gradient(160deg, #0f0f23 0%, #1a1a2e 35%, #16213e 70%, #0f3460 100%);
+    text-align: center;
+    padding: 3.5in 1.5in 2in 1.5in;
+  }
+
+  .back-cover .disclaimer {
+    font-size: 9pt;
+    color: #8892b0;
+    line-height: 1.8;
+    max-width: 500px;
+    margin-bottom: 3em;
+  }
+
+  .back-cover .disclaimer strong {
+    color: #ef476f;
+  }
+
+  .back-cover .author-line {
+    font-size: 11pt;
+    color: #ccd6f6;
+    margin-bottom: 0.5em;
+  }
+
+  .back-cover .date-line {
+    font-size: 10pt;
+    color: #8892b0;
+  }
+
+  .back-cover .back-logo {
+    font-size: 28pt;
+    font-weight: 800;
+    color: #00d4aa;
+    margin-bottom: 1em;
+  }
+
+  /* ===== STOCK UNIVERSE TABLE ===== */
+  .stock-table {
+    font-size: 7.5pt;
+  }
+
+  .stock-table td, .stock-table th {
+    padding: 2px 5px;
+  }
+
+  /* ===== FLOW / CYCLE DIAGRAM ===== */
+  .cycle-step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.35em;
+    page-break-inside: avoid;
+  }
+
+  .cycle-time {
+    flex: 0 0 90px;
+    font-weight: 700;
+    color: #00d4aa;
+    font-size: 9pt;
+    padding-top: 1px;
+  }
+
+  .cycle-desc {
+    flex: 1;
+  }
+
+  /* ===== FILTER CASCADE ===== */
+  .filter-step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.3em;
+    page-break-inside: avoid;
+  }
+
+  .filter-num {
+    flex: 0 0 22px;
+    height: 22px;
+    background: #00d4aa22;
+    border: 1px solid #00d4aa44;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 9pt;
+    color: #00d4aa;
+    margin-right: 8px;
+    margin-top: 1px;
+  }
+
+  .filter-content {
+    flex: 1;
+  }
+
+  .filter-content strong {
+    color: #00d4aa;
+  }
+
+  /* ===== KEYBOARD SHORTCUTS TABLE ===== */
+  .shortcut-key {
+    display: inline-block;
+    background: #16213e;
+    border: 1px solid #2a3a5a;
+    border-radius: 4px;
+    padding: 2px 10px;
+    font-family: monospace;
+    font-size: 9pt;
+    color: #ccd6f6;
+  }
+
+  /* ===== UTILITY ===== */
+  .no-break {
+    page-break-inside: avoid;
+  }
+
+  .spacer {
+    height: 0.5em;
+  }
+
+  .indent {
+    padding-left: 1.5em;
+  }
+
+  a {
+    color: #00b4d8;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- COVER PAGE                                                     -->
+<!-- ============================================================ -->
+<div class="cover-page">
+  <div class="cover-logo">glyphTrader</div>
+  <div class="cover-subtitle">Automated Trading System</div>
+  <div class="cover-line"></div>
+  <div class="cover-title">User Guide</div>
+  <div class="cover-version">Version 3.0.0</div>
+  <div class="cover-date">February 2026</div>
+  <div class="cover-authors">
+    <strong>Russell Shipe</strong> &amp; <strong>Claude</strong> (Anthropic)
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE OF CONTENTS                                              -->
+<!-- ============================================================ -->
+<div class="toc-page">
+  <h2>Table of Contents</h2>
+  <ul class="toc-list">
+    <li class="toc-section"><a href="#ch1">1. Introduction</a></li>
+    <li class="toc-subsection"><a href="#ch1-what">What is glyphTrader</a></li>
+    <li class="toc-subsection"><a href="#ch1-features">Key Features</a></li>
+    <li class="toc-subsection"><a href="#ch1-requirements">System Requirements</a></li>
+    <li class="toc-section"><a href="#ch2">2. Installation</a></li>
+    <li class="toc-subsection"><a href="#ch2-linux">Linux Quick Start</a></li>
+    <li class="toc-subsection"><a href="#ch2-setup">What setup.sh Does</a></li>
+    <li class="toc-subsection"><a href="#ch2-other">macOS / Windows Manual Setup</a></li>
+    <li class="toc-subsection"><a href="#ch2-access">Accessing the Web Interface</a></li>
+    <li class="toc-subsection"><a href="#ch2-recovery">Saving Your Recovery Key</a></li>
+    <li class="toc-section"><a href="#ch3">3. First Login</a></li>
+    <li class="toc-section"><a href="#ch4">4. Dashboard</a></li>
+    <li class="toc-section"><a href="#ch5">5. Auto Trades</a></li>
+    <li class="toc-section"><a href="#ch6">6. Manual Trades</a></li>
+    <li class="toc-subsection"><a href="#ch6-orphans">Discovered Orphans</a></li>
+    <li class="toc-subsection"><a href="#ch6-config">Trade Config Modal</a></li>
+    <li class="toc-subsection"><a href="#ch6-open">Open Manual Positions</a></li>
+    <li class="toc-section"><a href="#ch7">7. Trade History</a></li>
+    <li class="toc-section"><a href="#ch8">8. Trade Settings</a></li>
+    <li class="toc-subsection"><a href="#ch8-position">Position Sizing</a></li>
+    <li class="toc-subsection"><a href="#ch8-filters">Entry Filters</a></li>
+    <li class="toc-subsection"><a href="#ch8-exits">Exit Targets</a></li>
+    <li class="toc-subsection"><a href="#ch8-stops">Stop Management</a></li>
+    <li class="toc-subsection"><a href="#ch8-more">Pyramid Rules, Time Stops, VIX Sizing</a></li>
+    <li class="toc-subsection"><a href="#ch8-readonly">Read-Only Sections</a></li>
+    <li class="toc-section"><a href="#ch9">9. Settings</a></li>
+    <li class="toc-subsection"><a href="#ch9-license">Production License</a></li>
+    <li class="toc-section"><a href="#ch10">10. How the System Works</a></li>
+    <li class="toc-subsection"><a href="#ch10-strategy">The TFT V4/V7 Strategy</a></li>
+    <li class="toc-subsection"><a href="#ch10-cycle">Daily Trading Cycle</a></li>
+    <li class="toc-subsection"><a href="#ch10-filters">The 7-Filter Cascade</a></li>
+    <li class="toc-subsection"><a href="#ch10-positions">Position Management</a></li>
+    <li class="toc-subsection"><a href="#ch10-freshness">Data Freshness</a></li>
+    <li class="toc-subsection"><a href="#ch10-architecture">Architecture</a></li>
+    <li class="toc-section"><a href="#ch11">11. Updating</a></li>
+    <li class="toc-section"><a href="#ch12">12. Troubleshooting</a></li>
+    <li class="toc-appendix"><a href="#appendixA">Appendix A: Quick Reference</a></li>
+    <li class="toc-section"><a href="#ch13">13. How We Built It</a></li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 1: INTRODUCTION                                        -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch1">
+  <h1>1. Introduction</h1>
+
+  <h2 id="ch1-what">What is glyphTrader</h2>
+  <p>
+    glyphTrader is a standalone, containerized, automated stock trading system built on the
+    <strong>TFT V4/V7 strategy</strong> &mdash; a 100% technical analysis approach with zero AI or machine learning.
+    It connects exclusively to <strong>Tradier</strong> for both trade execution and market data, runs entirely
+    inside Docker containers on a single server, and provides a modern web interface for monitoring, configuration,
+    and manual trade management.
+  </p>
+  <p>
+    The system evaluates 64 stocks across 20 sectors daily, scoring each with a composite technical indicator
+    (the V4 Score), filtering candidates through a rigorous 7-step cascade, and placing bracket orders automatically.
+    Positions are managed with ATR-based stops and targets, stepped stop ratchets, pyramiding rules, and time-based exits.
+  </p>
+  <p>
+    For traders who also hold positions outside the automated strategy, glyphTrader offers full
+    <strong>manual trade management</strong>: discover, adopt, and manage orphan positions with configurable
+    stop/target modes, ratcheting stops, and hold mode.
+  </p>
+
+  <h2 id="ch1-features">Key Features</h2>
+  <ul>
+    <li><strong>Fully Automated Trading</strong> &mdash; Daily scoring, filtering, entry, and position management with no manual intervention required</li>
+    <li><strong>Manual Trade Management</strong> &mdash; Adopt broker-side positions, set custom stops/targets, hold mode, release or close at will</li>
+    <li><strong>6-Layer Data Freshness Guards</strong> &mdash; Never trades on stale data</li>
+    <li><strong>Bracket Orders (OTOCO)</strong> &mdash; Every entry includes stop loss and OCO profit targets</li>
+    <li><strong>ATR-Based Risk Management</strong> &mdash; Volatility-adaptive stops, targets, and position sizing</li>
+    <li><strong>Market Regime Awareness</strong> &mdash; VIX and benchmark SMA filters prevent trading in hostile markets</li>
+    <li><strong>One-Command Deployment</strong> &mdash; Docker Compose with automatic HTTPS via Caddy</li>
+    <li><strong>Encrypted Credentials</strong> &mdash; Fernet encryption with Argon2id key derivation</li>
+    <li><strong>Observe-Only Mode</strong> &mdash; Monitor without placing trades</li>
+    <li><strong>Kill Switch + Flatten All</strong> &mdash; Emergency controls always accessible from the dashboard</li>
+    <li><strong>Paper Trading by Default</strong> &mdash; Sandbox mode enforced unless a version-locked production license key is activated</li>
+  </ul>
+
+  <h2 id="ch1-requirements">System Requirements</h2>
+  <table>
+    <thead>
+      <tr><th>Requirement</th><th>Minimum</th><th>Recommended</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Docker</td><td>20.10+</td><td>Latest stable</td></tr>
+      <tr><td>Docker Compose</td><td>v2</td><td>v2 (plugin)</td></tr>
+      <tr><td>RAM</td><td>1 GB</td><td>2 GB</td></tr>
+      <tr><td>Disk</td><td>2 GB</td><td>5 GB</td></tr>
+      <tr><td>Broker Account</td><td colspan="2">Tradier (sandbox or production)</td></tr>
+      <tr><td>OS</td><td colspan="2">Linux (recommended), macOS, or Windows with WSL2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 2: INSTALLATION                                        -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch2">
+  <h1>2. Installation</h1>
+
+  <h2 id="ch2-linux">Linux Quick Start</h2>
+  <p>
+    On a fresh Linux server (Ubuntu 20.04+ or similar), the entire installation takes three commands:
+  </p>
+  <pre><code>git clone https://github.com/xochal/glyphTrader.git
+cd glyphTrader
+chmod +x setup.sh && ./setup.sh</code></pre>
+  <p>
+    The setup script handles everything: Docker installation, configuration, container builds, and first-run initialization.
+    You will be prompted to set an admin password during setup.
+  </p>
+
+  <h2 id="ch2-setup">What setup.sh Does</h2>
+  <ol>
+    <li><strong>Docker Check/Install</strong> &mdash; Detects if Docker and Docker Compose are installed; installs them if missing</li>
+    <li><strong>Admin Password Prompt</strong> &mdash; Asks you to create a secure admin password (used for all logins)</li>
+    <li><strong>Port Detection</strong> &mdash; Checks for port conflicts on 80/443 and configures Caddy accordingly</li>
+    <li><strong>Container Build</strong> &mdash; Builds and starts all three containers (Caddy, backend, frontend)</li>
+    <li><strong>Recovery Key Display</strong> &mdash; Generates and displays a one-time recovery key &mdash; save this immediately</li>
+  </ol>
+
+  <div class="info-box danger">
+    <span class="label">Critical</span>
+    <p>
+      Save your <strong>recovery key</strong> immediately after setup. It is the only way to regain access
+      if you forget your admin password. Store it in a password manager or secure offline location.
+    </p>
+  </div>
+
+  <h2 id="ch2-other">macOS / Windows Manual Setup</h2>
+  <p>For macOS or Windows (with WSL2), install Docker Desktop first, then:</p>
+  <pre><code>git clone https://github.com/xochal/glyphTrader.git
+cd glyphTrader
+cp .env.example .env
+# Edit .env to set your desired ports if needed
+docker compose build
+docker compose up -d</code></pre>
+  <p>
+    On first startup, you will need to access the web interface and complete initial password setup.
+  </p>
+
+  <h2 id="ch2-access">Accessing the Web Interface</h2>
+  <p>
+    Once the containers are running, open your browser and navigate to:
+  </p>
+  <pre><code>https://localhost</code></pre>
+  <p>
+    Caddy generates a self-signed TLS certificate automatically. Your browser will display a certificate
+    warning &mdash; this is expected and safe on your own server. Click through to proceed.
+  </p>
+
+  <div class="info-box">
+    <span class="label">Note</span>
+    <p>
+      If you configured a custom domain, Caddy will automatically obtain a valid Let's Encrypt certificate
+      and the browser warning will not appear.
+    </p>
+  </div>
+
+  <h2 id="ch2-recovery">Saving Your Recovery Key</h2>
+  <p>
+    The recovery key is displayed once during <code>setup.sh</code> execution. To use it later, send a POST
+    request to the recovery endpoint:
+  </p>
+  <pre><code>POST /api/auth/recover
+Content-Type: application/json
+{"recovery_key": "your-recovery-key-here", "new_password": "your-new-password"}</code></pre>
+  <p>
+    This resets the admin password and re-encrypts all stored credentials with the new password's derived key.
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 3: FIRST LOGIN                                         -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch3">
+  <h1>3. First Login</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/01_login.png" alt="Login page">
+    <div class="screenshot-caption">Figure 3.1 &mdash; The glyphTrader login page</div>
+  </div>
+
+  <p>
+    glyphTrader uses a <strong>single admin user</strong> model. There is one account, one password,
+    and one active session at a time. Enter your admin password on the login page to access the system.
+  </p>
+
+  <h2>Session Behavior</h2>
+  <ul>
+    <li><strong>Session Timeout:</strong> 10 minutes of inactivity triggers automatic logout</li>
+    <li><strong>JWT Authentication:</strong> Sessions use JWT tokens with refresh token rotation for security</li>
+    <li><strong>Revoke All Sessions:</strong> Available in the Settings page to force logout from all devices</li>
+  </ul>
+
+  <h2>System Lock vs. Unlock</h2>
+  <p>
+    glyphTrader encrypts all sensitive data (Tradier API tokens, account numbers) using <strong>Fernet
+    encryption</strong> with keys derived from your admin password via Argon2id. This means:
+  </p>
+  <ul>
+    <li><strong>Locked state:</strong> After a container restart, the system is locked. It can display the dashboard and historical data but cannot place trades or communicate with Tradier.</li>
+    <li><strong>Unlocked state:</strong> Logging in derives the encryption key and unlocks the system. Trading becomes possible, and the scheduler begins its normal cycle.</li>
+  </ul>
+
+  <div class="info-box warning">
+    <span class="label">Important</span>
+    <p>
+      After a server reboot or container restart, you must log in at least once to unlock the encryption
+      system. New trades will be blocked until the admin logs in.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 4: DASHBOARD                                           -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch4">
+  <h1>4. Dashboard</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/02_dashboard.png" alt="Dashboard">
+    <div class="screenshot-caption">Figure 4.1 &mdash; The Dashboard showing regime state, portfolio stats, and equity curve</div>
+  </div>
+
+  <p>
+    The Dashboard is your primary monitoring view. It displays the current market regime, portfolio performance,
+    and provides critical safety controls.
+  </p>
+
+  <h2>Header</h2>
+  <p>
+    The top navigation bar shows the application name, current page, and version number. When a newer version
+    is available on the remote repository, an <strong>Update Available</strong> chip appears next to the version.
+  </p>
+
+  <h2>Safety Controls</h2>
+  <h3>Observe-Only Mode</h3>
+  <p>
+    The blue <strong>Observe Only</strong> button toggles observe-only mode. When enabled, the system continues
+    its full analysis cycle (data fetch, enrichment, scoring, plan generation) but does not place any orders.
+    This is useful for monitoring the strategy's behavior before committing real capital. A password is
+    required to toggle this mode in either direction.
+  </p>
+
+  <h3>Enable / Disable Trading (Kill Switch)</h3>
+  <p>
+    The <strong>Enable Trading</strong> / <strong>Disable Trading</strong> button is the system's kill switch.
+    When disabled, no new automated trades are placed and existing position management (stops, targets) continues.
+    Enabling trading requires password confirmation to prevent accidental activation.
+  </p>
+
+  <h3>Flatten All</h3>
+  <p>
+    The <strong>Flatten All</strong> button is an emergency control that:
+  </p>
+  <ol>
+    <li>Cancels all open orders on Tradier</li>
+    <li>Market-sells all held positions immediately</li>
+    <li>Marks all tracked positions as CLOSED</li>
+  </ol>
+
+  <div class="info-box danger">
+    <span class="label">Warning</span>
+    <p>
+      Flatten All is <strong>irreversible</strong>. It requires trading to be disabled (kill switch activated)
+      and password confirmation. Use only in genuine emergencies.
+    </p>
+  </div>
+
+  <h2>Regime State</h2>
+  <p>
+    The Regime panel displays the current market environment:
+  </p>
+  <ul>
+    <li><strong>VIX Level:</strong> Current CBOE Volatility Index value</li>
+    <li><strong>SPY above SMA(100):</strong> Whether the S&amp;P 500 ETF is trading above its 100-day simple moving average</li>
+    <li><strong>QQQ above SMA(100):</strong> Whether the Nasdaq-100 ETF is trading above its 100-day simple moving average</li>
+    <li><strong>TRADING ALLOWED / BLOCKED badge:</strong> Green badge when the regime filter passes, red when it blocks entries</li>
+  </ul>
+  <p>
+    The regime filter is checked per stock against its assigned benchmark (SPY or QQQ). Entry is allowed if
+    the stock&rsquo;s benchmark is above its 100-day SMA, <em>or</em> VIX is below 20.
+    If VIX is at or above 32, all new entries are blocked regardless of benchmarks.
+  </p>
+
+  <h2>Portfolio Stats</h2>
+  <table>
+    <thead><tr><th>Stat</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Account Value</td><td>Total portfolio value from Tradier (including open positions)</td></tr>
+      <tr><td>Daily P&amp;L</td><td>Today's profit or loss across all positions</td></tr>
+      <tr><td>Cash Available</td><td>Uninvested cash balance</td></tr>
+      <tr><td>Open Positions</td><td>Number of currently held positions (auto + manual)</td></tr>
+      <tr><td>Win Rate</td><td>Percentage of closed trades that were profitable</td></tr>
+      <tr><td>Total P&amp;L</td><td>Cumulative profit/loss for all closed trades</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Equity Curve</h2>
+  <p>
+    The equity curve chart plots your portfolio value over time alongside <strong>SPY</strong> and
+    <strong>QQQ</strong> benchmarks (normalized to the same starting point). Time range toggles include:
+    <strong>30D</strong> (30 days), <strong>90D</strong> (90 days), <strong>1Y</strong> (1 year), and
+    <strong>ALL</strong> (full history).
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 5: AUTO TRADES                                         -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch5">
+  <h1>5. Auto Trades</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/03_auto_trades.png" alt="Auto Trades page">
+    <div class="screenshot-caption">Figure 5.1 &mdash; Auto Trades page (no positions currently open)</div>
+  </div>
+
+  <h2>How the Automated Strategy Works</h2>
+  <p>
+    Each trading day, glyphTrader executes a fully automated cycle:
+  </p>
+  <ol>
+    <li><strong>12:30 PM ET</strong> &mdash; Fetch daily OHLCV bars from Tradier and VIX data from yfinance, then enrich with all technical indicators and compute V4 scores</li>
+    <li><strong>12:45 PM ET</strong> &mdash; Apply the 7-filter cascade and generate entry plans for qualifying stocks</li>
+    <li><strong>1:00 PM ET</strong> &mdash; Execute trades by placing bracket orders (OTOCO) on Tradier</li>
+    <li><strong>Every 2 minutes</strong> &mdash; Monitor fills, manage stops, ratchet trailing stops</li>
+  </ol>
+  <p>
+    The Auto Trades page displays all positions initiated by the automated strategy. When the system is new
+    or the market regime is unfavorable, this table may be empty.
+  </p>
+
+  <h2>Position Table</h2>
+  <table>
+    <thead><tr><th>Column</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Symbol</td><td>Stock ticker</td></tr>
+      <tr><td>Shares</td><td>Current position size (may increase with pyramiding)</td></tr>
+      <tr><td>Entry</td><td>Average entry price (blended across tranches if pyramided)</td></tr>
+      <tr><td>Current</td><td>Latest market price</td></tr>
+      <tr><td>P&amp;L</td><td>Unrealized profit/loss (dollar amount and percentage)</td></tr>
+      <tr><td>Stop</td><td>Current stop-loss price</td></tr>
+      <tr><td>T1 / T2 / T3</td><td>Profit target prices</td></tr>
+      <tr><td>State</td><td>Current position state (see below)</td></tr>
+      <tr><td>Days</td><td>Trading days since entry</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Position States</h2>
+  <table>
+    <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-blue">ENTRY_PENDING</span></td><td>Bracket order submitted, awaiting fill</td></tr>
+      <tr><td><span class="badge badge-green">OPEN</span></td><td>Entry filled, all targets and stop active</td></tr>
+      <tr><td><span class="badge badge-yellow">T1_FILLED</span></td><td>First target hit, 70% sold, remaining position held</td></tr>
+      <tr><td><span class="badge badge-yellow">T2_FILLED</span></td><td>Second target hit, 20% more sold, 10% remaining</td></tr>
+      <tr><td><span class="badge badge-red">STOPPED</span></td><td>Stop loss triggered, position exited</td></tr>
+      <tr><td><span class="badge badge-gray">CLOSED</span></td><td>All shares sold (targets, time stop, or manual close)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 6: MANUAL TRADES                                       -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch6">
+  <h1>6. Manual Trades</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/04_manual_trades.png" alt="Manual Trades page">
+    <div class="screenshot-caption">Figure 6.1 &mdash; Manual Trades showing discovered orphan positions</div>
+  </div>
+
+  <p>
+    The Manual Trades page is designed for managing positions that exist on your Tradier account but were not
+    initiated by glyphTrader's automated strategy. This includes positions you opened manually through Tradier's
+    website or another platform.
+  </p>
+
+  <h2 id="ch6-orphans">Discovered Orphans</h2>
+  <p>
+    Every 5 minutes during market hours, glyphTrader's <strong>reconciliation engine</strong> compares positions
+    on your Tradier account against its internal database. Any positions not tracked by glyphTrader appear as
+    <strong>orphans</strong> in the Discovered Orphans section.
+  </p>
+  <p>For each orphan, you have two options:</p>
+  <ul>
+    <li><strong>Adopt</strong> &mdash; Brings the position into glyphTrader's management system. You will be prompted
+    to configure stop/target parameters. Once adopted, the system places protective orders and monitors the position
+    just like an automated trade.</li>
+    <li><strong>Dismiss</strong> &mdash; Hides the orphan from the list. Dismissed orphans are remembered and will not
+    reappear unless you clear them. They auto-clear when the position is sold on Tradier.</li>
+  </ul>
+
+  <h2 id="ch6-config">Trade Config Modal</h2>
+  <p>
+    When you click <strong>Adopt</strong> on an orphan or <strong>Edit</strong> on an existing manual position,
+    the Trade Config Modal appears. This dialog lets you configure how the position is managed:
+  </p>
+
+  <h3>Stop Mode</h3>
+  <ul>
+    <li><strong>ATR-based:</strong> Stop is calculated as a multiple of ATR (Average True Range) below the entry price. The default multiplier is 3.3x ATR.</li>
+    <li><strong>Fixed Dollar:</strong> Stop is set at an exact dollar price you specify.</li>
+  </ul>
+
+  <h3>Stop Value</h3>
+  <p>
+    For ATR mode, this is the multiplier (e.g., 3.3). For Fixed mode, this is the dollar price (e.g., 145.50).
+  </p>
+
+  <h3>Ratchet (Trailing Stop)</h3>
+  <p>
+    When enabled, the stop price ratchets upward as the stock price rises. The ratchet <strong>only moves up,
+    never down</strong>, protecting accumulated gains.
+  </p>
+  <ul>
+    <li><strong>Ratchet Mode &mdash; ATR:</strong> The ratchet maintains a fixed ATR distance below the current high</li>
+    <li><strong>Ratchet Mode &mdash; Percentage:</strong> The ratchet maintains a fixed percentage below the current high</li>
+  </ul>
+
+  <h3>Target Mode</h3>
+  <ul>
+    <li><strong>ATR-based:</strong> Targets calculated as ATR multiples above entry (T1: 0.7x, T2: 1.5x, T3: 3.0x by default)</li>
+    <li><strong>Fixed Dollar:</strong> You specify exact dollar prices for each target</li>
+  </ul>
+
+  <h3>Exit Percentages</h3>
+  <p>
+    How much of the position to sell at each target level. The default split is 70% at T1, 20% at T2,
+    and 10% at T3 (must total 100%).
+  </p>
+
+  <h2 id="ch6-open">Open Manual Positions</h2>
+  <p>
+    Once adopted, manual positions appear in the Open Manual Positions table with the same columns as auto trades
+    plus additional action buttons:
+  </p>
+  <table>
+    <thead><tr><th>Action</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Edit</strong></td><td>Reopen the Trade Config Modal to change stop/target settings</td></tr>
+      <tr><td><strong>Hold / Targets</strong></td><td>Toggle between Hold mode (stop-only, no targets) and Targets mode (normal T1/T2/T3 exits)</td></tr>
+      <tr><td><strong>Close</strong></td><td>Cancel all orders and market-sell the entire position immediately. Irreversible.</td></tr>
+      <tr><td><strong>Release</strong></td><td>Cancel glyphTrader's orders but keep the shares on Tradier. The position becomes untracked.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Mode Badges</h3>
+  <p>Manual positions display mode badges indicating their current configuration:</p>
+  <ul>
+    <li><span class="badge badge-yellow">Hold</span> &mdash; Stop-only mode, targets disabled</li>
+    <li><span class="badge badge-green">Ratchet</span> &mdash; Trailing stop enabled</li>
+    <li><span class="badge badge-gray">Fixed</span> &mdash; Using fixed-dollar stops/targets (not ATR-based)</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 7: TRADE HISTORY                                       -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch7">
+  <h1>7. Trade History</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/05_trade_history.png" alt="Trade History page">
+    <div class="screenshot-caption">Figure 7.1 &mdash; Trade History with performance stats and monthly returns heatmap</div>
+  </div>
+
+  <p>
+    The Trade History page provides a comprehensive record of all closed trades with performance analytics.
+  </p>
+
+  <h2>Stats Bar</h2>
+  <table>
+    <thead><tr><th>Metric</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Total Trades</td><td>Number of completed trades</td></tr>
+      <tr><td>Win Rate</td><td>Percentage of trades that closed profitably</td></tr>
+      <tr><td>Avg Win</td><td>Average profit on winning trades (dollars)</td></tr>
+      <tr><td>Avg Loss</td><td>Average loss on losing trades (dollars)</td></tr>
+      <tr><td>Profit Factor</td><td>Gross profits divided by gross losses (values above 1.0 indicate net profitability)</td></tr>
+      <tr><td>Total P&amp;L</td><td>Cumulative profit/loss across all closed trades</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Monthly Returns Heatmap</h2>
+  <p>
+    A color-coded grid showing monthly P&amp;L by month (columns) and year (rows). Green cells indicate
+    profitable months, red cells indicate losing months, with intensity reflecting the magnitude.
+  </p>
+
+  <h2>Filters</h2>
+  <ul>
+    <li><strong>Symbol Search:</strong> Filter by stock ticker</li>
+    <li><strong>Win/Loss:</strong> Show only winning or losing trades</li>
+    <li><strong>Auto/Manual:</strong> Filter by trade type (automated strategy vs. manual adoption)</li>
+  </ul>
+
+  <h2>Trade Table</h2>
+  <table>
+    <thead><tr><th>Column</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Symbol</td><td>Stock ticker</td></tr>
+      <tr><td>Type Badge</td><td><span class="badge badge-blue">A</span> for automated, <span class="badge badge-yellow">M</span> for manual</td></tr>
+      <tr><td>Entry Price</td><td>Average entry price (blended if pyramided)</td></tr>
+      <tr><td>Entry / Exit Dates</td><td>When the position was opened and closed</td></tr>
+      <tr><td>P&amp;L</td><td>Realized profit/loss with percentage</td></tr>
+      <tr><td>Hold Days</td><td>Number of trading days the position was held</td></tr>
+      <tr><td>Exit Reason</td><td>Why the trade closed (T1, T2, T3, STOPPED, TIME_STOP, MANUAL, etc.)</td></tr>
+      <tr><td>Pyramids</td><td>Number of add-on tranches (0, 1, or 2)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 8: TRADE SETTINGS                                      -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch8">
+  <h1>8. Trade Settings</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/06_trade_settings.png" alt="Trade Settings overview">
+    <div class="screenshot-caption">Figure 8.1 &mdash; Trade Settings page with collapsible accordion sections</div>
+  </div>
+
+  <p>
+    The Trade Settings page contains all configurable parameters for the trading strategy, organized into
+    collapsible accordion sections. Changes are saved to the database and take effect on the next trading cycle.
+    A <strong>Reset All to Defaults</strong> button at the bottom restores all parameters to their
+    <code>trading_params.json</code> defaults.
+  </p>
+
+  <!-- Position Sizing -->
+  <h2 id="ch8-position">Position Sizing</h2>
+
+  <div class="screenshot-container">
+    <img src="screenshots/08_trade_settings_position.png" alt="Position Sizing settings">
+    <div class="screenshot-caption">Figure 8.2 &mdash; Position Sizing configuration</div>
+  </div>
+
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Initial Position %</td><td>12.0%</td><td>Percentage of account value for the first tranche of a new position</td></tr>
+      <tr><td>Pyramid Position %</td><td>8.0%</td><td>Percentage of account value for each pyramid add-on</td></tr>
+      <tr><td>Max Per Stock %</td><td>36.0%</td><td>Maximum total allocation to a single stock (across all tranches)</td></tr>
+      <tr><td>Use Margin</td><td>Off</td><td>Whether to include margin buying power in position sizing calculations</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Entry Filters -->
+  <h2 id="ch8-filters">Entry Filters</h2>
+
+  <div class="screenshot-container">
+    <img src="screenshots/09_trade_settings_filters.png" alt="Entry Filters settings">
+    <div class="screenshot-caption">Figure 8.3 &mdash; Entry Filters configuration</div>
+  </div>
+
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>EMA Fast Period</td><td>5</td><td>Fast EMA period for crossover detection</td></tr>
+      <tr><td>EMA Slow Period</td><td>13</td><td>Slow EMA period for crossover detection</td></tr>
+      <tr><td>EMA Confirmation Mode</td><td>close_only</td><td>EMAs are calculated on close prices; entry requires EMA 5 &gt; EMA 13</td></tr>
+      <tr><td>Price Movement ATR Mult</td><td>0.6</td><td>Maximum overnight price change as a multiple of ATR</td></tr>
+      <tr><td>Max Slippage %</td><td>5.0%</td><td>Maximum allowed gap between signal price and current price</td></tr>
+      <tr><td>Regime VIX Max</td><td>32</td><td>VIX level that blocks all new entries</td></tr>
+      <tr><td>Regime VIX Allow Below</td><td>20</td><td>VIX level below which regime is considered favorable</td></tr>
+      <tr><td>Regime SMA Period</td><td>100</td><td>SMA period for benchmark regime check</td></tr>
+      <tr><td>Blocked Tiers</td><td>[5]</td><td>Stock tiers that are blocked from entry</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Exit Targets -->
+  <h2 id="ch8-exits">Exit Targets</h2>
+
+  <div class="screenshot-container">
+    <img src="screenshots/10_trade_settings_exits.png" alt="Exit Targets settings">
+    <div class="screenshot-caption">Figure 8.4 &mdash; Exit Targets configuration</div>
+  </div>
+
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Stop Loss Multiplier</td><td>3.3x ATR</td><td>Initial stop-loss distance below entry price</td></tr>
+      <tr><td>T1 Target Multiplier</td><td>0.7x ATR</td><td>First profit target above entry (exit 70% of position)</td></tr>
+      <tr><td>T2 Target Multiplier</td><td>1.5x ATR</td><td>Second profit target above entry (exit 20% of position)</td></tr>
+      <tr><td>T3 Target Multiplier</td><td>3.0x ATR</td><td>Third profit target above entry (exit 10% of position)</td></tr>
+      <tr><td>T1 Exit %</td><td>70%</td><td>Percentage of shares to sell at T1</td></tr>
+      <tr><td>T2 Exit %</td><td>20%</td><td>Percentage of shares to sell at T2</td></tr>
+      <tr><td>T3 Exit %</td><td>10%</td><td>Percentage of shares to sell at T3</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box">
+    <span class="label">Note</span>
+    <p>
+      Exit percentages must total 100%. The system validates this before saving.
+    </p>
+  </div>
+
+  <!-- Stop Management -->
+  <h2 id="ch8-stops">Stop Management</h2>
+
+  <div class="screenshot-container">
+    <img src="screenshots/11_trade_settings_stops.png" alt="Stop Management settings">
+    <div class="screenshot-caption">Figure 8.5 &mdash; Stop Management configuration</div>
+  </div>
+
+  <h3>Stepped Stops</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Enabled</td><td>On</td><td>Whether stepped stops are active</td></tr>
+      <tr><td>Step Size</td><td>0.5</td><td>ATR fraction to raise the stop per active day</td></tr>
+      <tr><td>Delay Days</td><td>0</td><td>Days after entry before stepping begins</td></tr>
+      <tr><td>Use Dynamic ATR</td><td>On</td><td>Recalculate ATR each day vs. using entry-day ATR</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Breakeven</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Offset %</td><td>1.0%</td><td>When T1 fills, stop is raised to entry price plus this percentage</td></tr>
+      <tr><td>Cap at T1 Minus %</td><td>1.0%</td><td>Breakeven stop is capped at T1 price minus this percentage</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Pyramid, Time Stops, VIX Sizing -->
+  <h2 id="ch8-more">Pyramid Rules, Time Stops, and VIX Sizing</h2>
+
+  <h3>Pyramid Rules</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Max Pyramids Per Position</td><td>2</td><td>Maximum add-on tranches (total 3 tranches per position)</td></tr>
+      <tr><td>Min V4 Score for Pyramid</td><td>75.0</td><td>Stock must re-qualify with V4 score >= 75 for each add-on</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Time Stops</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Hard Time Stop Days</td><td>60</td><td>Maximum calendar days to hold any position</td></tr>
+      <tr><td>Stagnant Win Days</td><td>20</td><td>Days after T1 fill before stagnant check applies</td></tr>
+      <tr><td>Stagnant Win Min Profit %</td><td>5.0%</td><td>If profit is below this after stagnant days, exit remaining shares</td></tr>
+    </tbody>
+  </table>
+
+  <h3>VIX Sizing Brackets</h3>
+  <p>
+    As VIX rises, position sizes automatically decrease. The brackets and multipliers are:
+  </p>
+  <table>
+    <thead><tr><th>VIX Range</th><th>Size Multiplier</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>VIX &lt; 16</td><td>1.0x (100%)</td><td>Full position size</td></tr>
+      <tr><td>16 &le; VIX &lt; 22</td><td>0.8x (80%)</td><td>Slightly reduced</td></tr>
+      <tr><td>22 &le; VIX &lt; 28</td><td>0.6x (60%)</td><td>Moderately reduced</td></tr>
+      <tr><td>28 &le; VIX &lt; 34</td><td>0.4x (40%)</td><td>Significantly reduced</td></tr>
+      <tr><td>VIX &ge; 34</td><td>0.2x (20%)</td><td>Minimal exposure</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Read-Only Sections -->
+  <h2 id="ch8-readonly">Read-Only Sections</h2>
+
+  <h3>V4 Scoring Weights</h3>
+  <div class="screenshot-container">
+    <img src="screenshots/12_trade_settings_v4.png" alt="V4 Scoring weights">
+    <div class="screenshot-caption">Figure 8.6 &mdash; V4 Scoring (read-only) &mdash; locked algorithm constants</div>
+  </div>
+
+  <p>
+    These are the locked algorithm constants used in V4 composite scoring. They are displayed for reference
+    and cannot be modified through the interface:
+  </p>
+  <table>
+    <thead><tr><th>Weight</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Linear Regression Slope</td><td>40.9</td></tr>
+      <tr><td>ADX</td><td>38.9</td></tr>
+      <tr><td>Stochastic K</td><td>25.8</td></tr>
+      <tr><td>RSI</td><td>22.2</td></tr>
+      <tr><td>Overbought Stochastic Threshold</td><td>92</td></tr>
+      <tr><td>Overbought RSI Threshold</td><td>80</td></tr>
+      <tr><td>Extended Penalty</td><td>-0.953</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Schedule</h3>
+  <p>
+    The Schedule section displays all APScheduler jobs with their last run time and next scheduled run. This is
+    read-only and includes: data fetch, enrichment, plan generation, execution, monitoring, reconciliation,
+    and end-of-day snapshot jobs.
+  </p>
+
+  <h3>Stock Universe</h3>
+
+  <div class="screenshot-container">
+    <img src="screenshots/13_trade_settings_universe.png" alt="Stock Universe">
+    <div class="screenshot-caption">Figure 8.7 &mdash; Stock Universe showing all 64 tracked symbols</div>
+  </div>
+
+  <p>
+    The full list of 64 stocks monitored by glyphTrader, organized by sector. Each stock has a tier
+    (1&ndash;5), a sector-specific V4 threshold, and a benchmark index (SPY or QQQ). The universe is
+    configurable via <code>backend/config/watchlist.json</code> but displayed as read-only in the UI.
+  </p>
+
+  <table class="stock-table">
+    <thead>
+      <tr><th>Sector</th><th>Symbols</th><th>Tier</th><th>V4 Threshold</th><th>Benchmark</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Semiconductors</td><td>AMD, ASML, AVGO, KLAC, MRVL, NVDA, TSM</td><td>1</td><td>68</td><td>QQQ</td></tr>
+      <tr><td>Nuclear</td><td>BWXT, CCJ, DNN, SMR, UEC, UUUU</td><td>1</td><td>75&ndash;80</td><td>QQQ</td></tr>
+      <tr><td>Nuclear ETF</td><td>NLR</td><td>1</td><td>80</td><td>SPY</td></tr>
+      <tr><td>Cloud/SaaS</td><td>PANW</td><td>1</td><td>75</td><td>QQQ</td></tr>
+      <tr><td>Mega Tech</td><td>AAPL, AMZN, GOOGL, NFLX</td><td>2</td><td>75&ndash;82</td><td>QQQ</td></tr>
+      <tr><td>Solar</td><td>CSIQ, DQ, ENPH, FSLR, JKS, RUN, SEDG, SOL</td><td>2</td><td>78</td><td>QQQ</td></tr>
+      <tr><td>Healthcare</td><td>ABBV, LLY, VRTX</td><td>2</td><td>75</td><td>SPY/QQQ</td></tr>
+      <tr><td>Biotech</td><td>BMRN, INCY, IONS</td><td>2</td><td>75</td><td>QQQ</td></tr>
+      <tr><td>Technology</td><td>ACN, CSCO</td><td>2</td><td>75</td><td>SPY/QQQ</td></tr>
+      <tr><td>Utilities</td><td>DUK, EXC, NEE, SO, SRE</td><td>2</td><td>68</td><td>SPY</td></tr>
+      <tr><td>Clean Energy</td><td>LIT, STEM</td><td>2</td><td>75</td><td>SPY/QQQ</td></tr>
+      <tr><td>Industrials</td><td>ALLE, ETN, JCI, PWR, WTS</td><td>3</td><td>75</td><td>SPY</td></tr>
+      <tr><td>Insurance</td><td>ALL, CB, TRV</td><td>3</td><td>75</td><td>SPY</td></tr>
+      <tr><td>Materials</td><td>ALB, FCX, HCC, PICK, REMX</td><td>3</td><td>75</td><td>SPY</td></tr>
+      <tr><td>Energy</td><td>CVX, XLE</td><td>3</td><td>75</td><td>SPY</td></tr>
+      <tr><td>Consumer / Staples</td><td>CVNA, DKS, KO, MAR, PM, TPR, WMT</td><td>4</td><td>75</td><td>SPY</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>Reset All to Defaults</strong> &mdash; At the bottom of the Trade Settings page, this button
+    restores all configurable parameters to their default values from <code>trading_params.json</code>.
+    Read-only sections (V4 Scoring, Schedule, Stock Universe) are unaffected.
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 9: SETTINGS                                            -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch9">
+  <h1>9. Settings</h1>
+
+  <div class="screenshot-container">
+    <img src="screenshots/07_settings.png" alt="Settings page">
+    <div class="screenshot-caption">Figure 9.1 &mdash; Settings page with credentials, security, system status, and audit log</div>
+  </div>
+
+  <h2>Tradier Credentials</h2>
+  <p>
+    Enter your Tradier API credentials here. All values are encrypted with Fernet before storage in SQLite.
+  </p>
+  <table>
+    <thead><tr><th>Field</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>API Token</td><td>Your Tradier access token (displayed masked after saving)</td></tr>
+      <tr><td>Account Number</td><td>Your Tradier brokerage account number</td></tr>
+      <tr><td>Environment</td><td><strong>Sandbox</strong> (paper trading) or <strong>Production</strong> (real money)</td></tr>
+    </tbody>
+  </table>
+  <p>
+    After entering credentials, click <strong>Save</strong> to store them, then <strong>Test Connection</strong>
+    to verify they work. The test checks API authentication and account access.
+  </p>
+
+  <div class="info-box warning">
+    <span class="label">Important</span>
+    <p>
+      Always start with the <strong>Sandbox</strong> environment to verify the system works correctly
+      before switching to Production. Sandbox uses paper money and places no real trades.
+    </p>
+  </div>
+
+  <h2 id="ch9-license">Production License</h2>
+  <p>
+    glyphTrader ships in <strong>paper trading mode</strong> by default. The Production environment option
+    in the credentials dropdown is disabled until a valid license key is activated. This is a safety measure
+    to ensure that anyone running the system has explicitly acknowledged the risks of live trading.
+  </p>
+
+  <h3>How Licensing Works</h3>
+  <ul>
+    <li>License keys are <strong>Ed25519 digital signatures</strong> tied to a specific software version</li>
+    <li>Each key has the format <code>GT-&lt;base64-encoded-signature&gt;</code> (approximately 90 characters)</li>
+    <li>Keys are <strong>version-locked</strong> &mdash; when glyphTrader is updated to a new version, the existing key is automatically invalidated and the system reverts to sandbox mode</li>
+    <li>To obtain a new key after an update, contact the project maintainer, re-read the <strong>WAIVER.md</strong>, and confirm your acceptance of risk</li>
+  </ul>
+
+  <h3>Activating a License Key</h3>
+  <ol>
+    <li>Navigate to <strong>Settings</strong></li>
+    <li>Find the <strong>Production License</strong> card (between Tradier Credentials and Change Password)</li>
+    <li>Paste your license key (starting with <code>GT-</code>) into the input field</li>
+    <li>Click <strong>Activate License</strong></li>
+    <li>If valid, the status changes to <span class="badge badge-green">LICENSED</span> and the Production environment option becomes available in the credentials dropdown</li>
+  </ol>
+
+  <h3>Removing a License</h3>
+  <p>
+    Click <strong>Remove License</strong> on the Production License card. This clears the key and immediately
+    forces the environment back to Sandbox. A confirmation dialog prevents accidental removal.
+  </p>
+
+  <h3>Version Invalidation</h3>
+  <p>
+    When glyphTrader starts up after an update, it compares the stored license version against the current
+    software version. If they differ:
+  </p>
+  <ol>
+    <li>The stored license key is cleared</li>
+    <li>The environment is forced to Sandbox</li>
+    <li>A warning is logged to the backend console</li>
+  </ol>
+  <p>
+    This is intentional &mdash; it ensures you re-review the liability waiver and obtain a fresh key for each version,
+    since code changes may alter trading behavior.
+  </p>
+
+  <div class="info-box warning">
+    <span class="label">Recommendation</span>
+    <p>
+      Paper trade for <strong>30 to 90 days</strong> before requesting a production license key.
+      This gives you time to observe the system&rsquo;s behavior, verify data freshness,
+      and build confidence in its operation.
+    </p>
+  </div>
+
+  <h3>Paper Trading Banner</h3>
+  <p>
+    When the system is running without a valid production license (or with the environment set to Sandbox),
+    an amber <strong>PAPER TRADING MODE</strong> banner appears at the top of every page. This banner is
+    hidden only when a valid license is active <em>and</em> the environment is set to Production.
+  </p>
+
+  <h2>Change Password</h2>
+  <p>
+    Change the admin password by entering the current password, the new password, and confirming it. Changing
+    the password re-derives the Fernet encryption key and re-encrypts all stored credentials.
+  </p>
+
+  <h2>Security</h2>
+  <p>
+    The <strong>Revoke All Sessions</strong> button invalidates all active JWT tokens, forcing a logout on
+    every device. Use this if you suspect unauthorized access.
+  </p>
+
+  <h2>System Status</h2>
+  <table>
+    <thead><tr><th>Field</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Version</td><td>Current glyphTrader version</td></tr>
+      <tr><td>Lock State</td><td>Locked (credentials encrypted, no trading) or Unlocked (ready to trade)</td></tr>
+      <tr><td>Trading Enabled</td><td>Whether the kill switch is on or off</td></tr>
+      <tr><td>Observe Only</td><td>Whether observe-only mode is active</td></tr>
+      <tr><td>Scheduler Status</td><td>Details for each scheduled job: last run time, next run time, state</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Check for Updates</h2>
+  <p>
+    Compares your local git repository against the remote. If updates are available, it shows the number
+    of commits behind and a summary of changes. Use <code>update.sh</code> to apply updates (see Chapter 11).
+  </p>
+
+  <h2>Audit Log</h2>
+  <p>
+    A chronological log of security-relevant events:
+  </p>
+  <ul>
+    <li>Login attempts (successful and failed) with IP addresses</li>
+    <li>Password changes</li>
+    <li>Credential updates</li>
+    <li>Kill switch and observe-only mode toggles</li>
+    <li>Session revocations</li>
+    <li>Flatten All events</li>
+    <li>License activations and deactivations</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 10: HOW THE SYSTEM WORKS                               -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch10">
+  <h1>10. How the System Works</h1>
+
+  <h2 id="ch10-strategy">The TFT V4/V7 Strategy</h2>
+  <p>
+    glyphTrader implements the TFT V4/V7 strategy, a <strong>100% technical analysis</strong> approach with
+    <strong>zero AI or machine learning</strong>. The strategy was developed and backtested over 6+ years before
+    being ported to this automated system.
+  </p>
+
+  <h3>V4 Composite Score</h3>
+  <p>
+    The core of the strategy is the V4 Composite Score &mdash; a weighted blend of six technical indicators
+    that produces a single score (0&ndash;100) measuring the quality of a stock's current technical setup.
+  </p>
+
+  <h4>Primary Indicators (Weighted)</h4>
+  <table>
+    <thead><tr><th>Indicator</th><th>Weight</th><th>What It Measures</th></tr></thead>
+    <tbody>
+      <tr><td>Linear Regression Slope</td><td>40.9</td><td>Trend direction and strength over the regression window</td></tr>
+      <tr><td>ADX (Average Directional Index)</td><td>38.9</td><td>Trend strength (directional movement)</td></tr>
+      <tr><td>Stochastic K</td><td>25.8</td><td>Momentum oscillator showing current price relative to range</td></tr>
+      <tr><td>RSI (Relative Strength Index)</td><td>22.2</td><td>Momentum measuring speed and magnitude of price changes</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Modifiers</h4>
+  <ul>
+    <li><strong>Bollinger Band Position (BB_PCT):</strong> Measures where price sits within the Bollinger Bands, modifying the composite score</li>
+    <li><strong>Volume Surge (VOL_SURGE):</strong> Detects unusual volume relative to the moving average, acting as a confirmation modifier</li>
+  </ul>
+
+  <h4>Overbought Penalties</h4>
+  <ul>
+    <li><strong>Stochastic &gt; 92:</strong> Applies a penalty to prevent entries into overbought momentum</li>
+    <li><strong>RSI &gt; 80:</strong> Applies a penalty to prevent entries into overbought conditions</li>
+    <li><strong>Extended Penalty:</strong> A penalty of -0.953 points applied when BB%B exceeds 93.6% (price far above upper Bollinger Band)</li>
+  </ul>
+
+  <h4>Sector-Specific Thresholds</h4>
+  <p>
+    Different sectors require different V4 scores to trigger an entry. Higher thresholds are applied
+    to more volatile or crowded sectors:
+  </p>
+  <table>
+    <thead><tr><th>Threshold</th><th>Sectors</th></tr></thead>
+    <tbody>
+      <tr><td>68</td><td>Semiconductors, Utilities</td></tr>
+      <tr><td>75</td><td>Nuclear (SMR), Healthcare, Biotech, Technology, Cloud/SaaS, Clean Energy, Industrials, Insurance, Materials, Energy, Consumer, Consumer Staples, Mega Tech (NFLX)</td></tr>
+      <tr><td>78</td><td>Solar</td></tr>
+      <tr><td>80</td><td>Nuclear (BWXT, CCJ, DNN, NLR, UEC, UUUU)</td></tr>
+      <tr><td>82</td><td>Mega Tech (AAPL, AMZN, GOOGL)</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="ch10-cycle">Daily Trading Cycle</h2>
+  <p>
+    The automated trading cycle runs on a fixed schedule every trading day (market holidays excluded):
+  </p>
+
+  <div class="cycle-step">
+    <div class="cycle-time">12:30 PM ET</div>
+    <div class="cycle-desc">
+      <strong>Data Fetch</strong> &mdash; Downloads daily OHLCV bars from Tradier for all 64 stocks plus
+      SPY/QQQ benchmarks. VIX historical data is fetched from yfinance (Tradier does not provide VIX history).
+      Data is stored in SQLite for persistence across restarts.
+    </div>
+  </div>
+
+  <div class="cycle-step">
+    <div class="cycle-time">12:45 PM ET</div>
+    <div class="cycle-desc">
+      <strong>Plan Generation</strong> &mdash; Runs the 7-filter cascade on all scored stocks.
+      Qualifying signals become entry plans. Aborts if data is stale, benchmarks are missing, or VIX data is unavailable.
+    </div>
+  </div>
+
+  <div class="cycle-step">
+    <div class="cycle-time">1:00 PM ET</div>
+    <div class="cycle-desc">
+      <strong>Trade Execution</strong> &mdash; Executes pending entry plans as bracket orders (OTOCO) on Tradier.
+      Processes time stops first, then places new orders with calculated position sizes.
+    </div>
+  </div>
+
+  <div class="cycle-step">
+    <div class="cycle-time">Every 2 min</div>
+    <div class="cycle-desc">
+      <strong>Monitor Cycle</strong> &mdash; Checks for order fills, updates stop levels (stepped stops,
+      breakeven, trailing ratchet), manages target exits, and enforces time stops.
+    </div>
+  </div>
+
+  <div class="cycle-step">
+    <div class="cycle-time">Every 5 min</div>
+    <div class="cycle-desc">
+      <strong>Reconciliation</strong> &mdash; Compares Tradier positions against internal records. Detects
+      ghost positions (tracked but not on broker), orphans (on broker but not tracked), and quantity
+      mismatches. Cleans up stale orders and updates position states.
+    </div>
+  </div>
+
+  <div class="cycle-step">
+    <div class="cycle-time">4:05 PM ET</div>
+    <div class="cycle-desc">
+      <strong>End-of-Day Snapshot</strong> &mdash; Records portfolio value, benchmark prices (SPY, QQQ),
+      and daily P&amp;L for the equity curve and performance tracking.
+    </div>
+  </div>
+
+  <h2 id="ch10-filters">The 7-Filter Cascade</h2>
+  <p>
+    Every potential entry must pass all seven filters in this exact order. If a stock fails any filter,
+    it is rejected and the remaining filters are not evaluated:
+  </p>
+
+  <div class="filter-step">
+    <div class="filter-num">1</div>
+    <div class="filter-content">
+      <strong>V4 Score</strong> &mdash; The stock's V4 composite score must meet or exceed its
+      sector-specific threshold (68&ndash;82 depending on sector).
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div class="filter-num">2</div>
+    <div class="filter-content">
+      <strong>EMA Crossover</strong> &mdash; The 5-period EMA must be above the 13-period EMA, with
+      <code>close_only</code> confirmation (EMAs are calculated on closing prices).
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div class="filter-num">3</div>
+    <div class="filter-content">
+      <strong>Price Movement</strong> &mdash; The overnight price change must be less than 0.6x ATR.
+      This blocks entries on stocks that gapped significantly, where the technical setup may be unreliable.
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div class="filter-num">4</div>
+    <div class="filter-content">
+      <strong>Slippage</strong> &mdash; The gap between the signal price (when the score was calculated) and
+      the current market price must be within 5%. This filter blocked 43 entries over 6 years of backtesting
+      and is often overlooked.
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div class="filter-num">5</div>
+    <div class="filter-content">
+      <strong>Regime</strong> &mdash; Each stock is checked against its assigned benchmark index (SPY or QQQ, per
+      watchlist config). Entry is allowed if: (a) the stock&rsquo;s benchmark is above its 100-day SMA, or
+      (b) VIX is below 20. If VIX is at or above 32, all entries are blocked regardless of benchmarks.
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div class="filter-num">6</div>
+    <div class="filter-content">
+      <strong>Sector</strong> &mdash; Stocks in Tier 5 sectors are blocked from entry. Currently, no stocks
+      in the universe are Tier 5, but this filter exists as a safety mechanism.
+    </div>
+  </div>
+
+  <div class="filter-step">
+    <div class="filter-num">7</div>
+    <div class="filter-content">
+      <strong>Cash</strong> &mdash; Sufficient capital must be available for the position size. The required
+      amount is calculated based on the position sizing percentage, VIX sizing multiplier, and current
+      account value.
+    </div>
+  </div>
+
+  <h2 id="ch10-positions">Position Management</h2>
+
+  <h3>Entry: Bracket Orders (OTOCO)</h3>
+  <p>
+    Every entry is placed as an OTOCO (One-Triggers-OCO) bracket order on Tradier:
+  </p>
+  <ul>
+    <li><strong>Primary order:</strong> Market or limit buy for the calculated share quantity</li>
+    <li><strong>Stop loss:</strong> Sell stop at 3.3x ATR below entry price</li>
+    <li><strong>OCO targets:</strong> Limit sells at T1, T2, and T3 prices with appropriate quantities</li>
+  </ul>
+  <p>
+    When the primary order fills, the protective orders activate automatically.
+  </p>
+
+  <h3>ATR-Based Targets</h3>
+  <p>
+    All stops and targets are calculated relative to the 14-period ATR (Average True Range) at the time of entry,
+    using a 70/20/10 exit split:
+  </p>
+  <table>
+    <thead><tr><th>Level</th><th>Distance</th><th>Exit %</th><th>Example (Entry $100, ATR $2.00)</th></tr></thead>
+    <tbody>
+      <tr><td>Stop</td><td>3.3x ATR below</td><td>100% (remaining)</td><td>$93.40</td></tr>
+      <tr><td>T1</td><td>0.7x ATR above</td><td>70%</td><td>$101.40</td></tr>
+      <tr><td>T2</td><td>1.5x ATR above</td><td>20%</td><td>$103.00</td></tr>
+      <tr><td>T3</td><td>3.0x ATR above</td><td>10%</td><td>$106.00</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pyramiding</h3>
+  <p>
+    If a stock continues to score well after entry, up to <strong>2 pyramid adds</strong> (3 total tranches)
+    are allowed, each requiring:
+  </p>
+  <ul>
+    <li>V4 score of at least 75 at time of pyramid</li>
+    <li>Available cash for the pyramid allocation (8% of account by default)</li>
+  </ul>
+  <p>
+    On each pyramid add, <strong>all stops and targets are reset</strong> to the new blended average entry price.
+    This ensures risk management reflects the actual cost basis, not the original entry.
+  </p>
+
+  <h3>Stepped Stops</h3>
+  <p>
+    Each trading day, the stop-loss price is ratcheted upward by a calculated step:
+  </p>
+  <pre><code>new_stop = base_stop + (active_days x 0.5 x ATR)</code></pre>
+  <p>
+    The stepped stop is <strong>capped at the breakeven level</strong> before T1 fills, preventing the stop
+    from rising above the entry price prematurely. After T1 fills, the stop continues stepping upward without
+    a cap.
+  </p>
+
+  <h3>Breakeven</h3>
+  <p>
+    When T1 fills (the first profit target is hit), the base stop is raised to entry price + 1.0%, locking in
+    a small profit on the remaining shares. This breakeven stop is capped at T1 price minus 1.0% to prevent the
+    stop from sitting too close to the fill zone. When T2 subsequently fills, the stop is pulled up further to
+    the T1 price level, protecting the bulk of the gains.
+  </p>
+
+  <h3>Trailing Stops (Ratchet)</h3>
+  <p>
+    After the position reaches maximum size (all pyramid slots used), the stop becomes a trailing ratchet
+    that only moves <strong>up, never down</strong>. This locks in progressively higher profits as the
+    stock advances.
+  </p>
+
+  <h3>Time Stops</h3>
+  <ul>
+    <li><strong>Hard time stop:</strong> After 60 calendar days, the position is exited regardless of P&amp;L</li>
+    <li><strong>Stagnant win exit:</strong> If T1 has been hit and the trade has been held for 20+ days with less than 5% total profit, the remaining shares are sold</li>
+  </ul>
+
+  <h2 id="ch10-freshness">Data Freshness (6 Safety Layers)</h2>
+  <p>
+    glyphTrader <strong>never trades on stale data</strong>. Six independent safety layers prevent this:
+  </p>
+
+  <table>
+    <thead><tr><th>Layer</th><th>Check</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Fetch Threshold</td>
+        <td>Enrichment aborts if fewer than 75% of stocks were fetched successfully, or if benchmark data (SPY/QQQ) is missing</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>DataStore Clearing</td>
+        <td>Old in-memory data is wiped before each enrichment cycle, preventing stale symbol data from persisting</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Global Freshness</td>
+        <td>Plan generation checks that the DataStore was updated today before generating any entry plans</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>VIX Staleness</td>
+        <td>VIX data must be no more than 4 calendar days old (covers weekends plus one holiday)</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Per-Symbol Staleness</td>
+        <td>Each stock and benchmark is individually verified for current data before use</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>NaN Guards</td>
+        <td>V4_SCORE, SMA_100, and ATR_14 are explicitly checked for NaN before any calculation or trade decision</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="ch10-architecture">Architecture</h2>
+
+  <h3>Container Stack</h3>
+  <table>
+    <thead><tr><th>Container</th><th>Technology</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Reverse Proxy</td><td>Caddy</td><td>Automatic HTTPS, security headers, request routing</td></tr>
+      <tr><td>Backend</td><td>FastAPI + APScheduler</td><td>API server, trading logic, scheduled jobs</td></tr>
+      <tr><td>Frontend</td><td>React + nginx</td><td>Web interface (6 pages)</td></tr>
+      <tr><td>Database</td><td>SQLite (WAL mode)</td><td>Persistent storage on mounted volume</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Design Constraints</h3>
+  <ul>
+    <li><strong>Single server, no failover:</strong> Simple deployment, no distributed coordination</li>
+    <li><strong>Single worker (<code>--workers 1</code>):</strong> Required because Fernet key cache is per-process</li>
+    <li><strong>Integer cents:</strong> All monetary values stored as integers (e.g., $150.25 = 15025) to eliminate floating-point rounding errors</li>
+    <li><strong>Whole shares only:</strong> Fractional shares are not supported because GTC OCO bracket orders require whole share quantities</li>
+    <li><strong>Tradier only:</strong> Single broker for both execution and market data (no Alpaca, no other brokers)</li>
+    <li><strong>SQLite only:</strong> Portable, zero-configuration database (no PostgreSQL)</li>
+    <li><strong>Form-encoded API:</strong> Tradier API requires form-encoded POST bodies, not JSON</li>
+  </ul>
+
+  <h3>Security</h3>
+  <ul>
+    <li><strong>Fernet encryption</strong> with Argon2id key derivation for stored credentials</li>
+    <li><strong>JWT authentication</strong> with refresh token rotation</li>
+    <li><strong>Rate limiting</strong> on authentication endpoints</li>
+    <li><strong>Audit logging</strong> for all security-relevant events</li>
+    <li><strong>Observe-only mode</strong> for safe monitoring</li>
+    <li><strong>Kill switch</strong> with password confirmation</li>
+    <li><strong>Session revocation</strong> for compromised access</li>
+    <li><strong>Self-signed HTTPS</strong> by default (automatic Let&rsquo;s Encrypt certificates with custom domains)</li>
+    <li><strong>Production license lock</strong> with Ed25519 signature verification and version-bound keys</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 11: UPDATING                                           -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch11">
+  <h1>11. Updating</h1>
+
+  <h2>Linux (One Command)</h2>
+  <pre><code>./update.sh</code></pre>
+  <p>
+    The update script performs the following steps automatically:
+  </p>
+  <ol>
+    <li>Pulls the latest code from the remote git repository</li>
+    <li>Rebuilds Docker images with the new code</li>
+    <li>Restarts containers with the updated images</li>
+    <li>Runs health checks to verify all services started correctly</li>
+  </ol>
+
+  <h2>macOS / Windows</h2>
+  <pre><code>git pull
+docker compose build
+docker compose up -d</code></pre>
+
+  <h2>Data Preservation</h2>
+  <p>
+    Your data survives updates because:
+  </p>
+  <ul>
+    <li>SQLite database files are stored on a <strong>bind-mounted volume</strong> (<code>./data:/app/dbdata</code>) outside the container filesystem</li>
+    <li>Container recreation does not touch mounted volumes</li>
+    <li>Schema migrations are applied automatically on startup when the database version is behind</li>
+  </ul>
+
+  <div class="info-box success">
+    <span class="label">Safe</span>
+    <p>
+      Updating never deletes your trade history, positions, settings, or credentials. The SQLite database
+      persists across all updates and container rebuilds.
+    </p>
+  </div>
+
+  <div class="info-box warning">
+    <span class="label">License Reset</span>
+    <p>
+      After an update, your production license key is automatically invalidated and the environment
+      reverts to Sandbox. You must obtain a new license key for the updated version before switching
+      back to Production. This is a safety measure &mdash; code changes may affect trading behavior,
+      so each version requires explicit re-acknowledgment of the risks.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 12: TROUBLESHOOTING                                    -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch12">
+  <h1>12. Troubleshooting</h1>
+
+  <table>
+    <thead><tr><th>Symptom</th><th>Cause</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>"System is locked"</strong></td>
+        <td>Containers restarted and the encryption key is not in memory</td>
+        <td>Log in with your admin password to unlock the encryption system</td>
+      </tr>
+      <tr>
+        <td><strong>Browser certificate warning</strong></td>
+        <td>Self-signed TLS certificate (expected behavior)</td>
+        <td>Click through the warning to proceed. For custom domains, Caddy obtains valid Let's Encrypt certificates automatically.</td>
+      </tr>
+      <tr>
+        <td><strong>No data on dashboard</strong></td>
+        <td>Data fetch has not run yet today</td>
+        <td>Data fetch runs at 12:30 PM ET. Before that time, dashboard shows previous day's data. Alternatively, restart containers to trigger a startup data load.</td>
+      </tr>
+      <tr>
+        <td><strong>"Session expired"</strong></td>
+        <td>10 minutes of inactivity</td>
+        <td>Log in again. This is a security feature.</td>
+      </tr>
+      <tr>
+        <td><strong>Orphans not showing</strong></td>
+        <td>Reconciliation cycle has not run yet</td>
+        <td>Reconciliation runs every 5 minutes during market hours. Wait for the next cycle, or restart containers.</td>
+      </tr>
+      <tr>
+        <td><strong>Forgot admin password</strong></td>
+        <td>N/A</td>
+        <td>Use your recovery key with <code>POST /api/auth/recover</code> to reset the password</td>
+      </tr>
+      <tr>
+        <td><strong>Lost recovery key</strong></td>
+        <td>N/A</td>
+        <td>There is no other way to recover access. You must delete the database and re-run setup.</td>
+      </tr>
+      <tr>
+        <td><strong>Trades not executing</strong></td>
+        <td>Multiple possible causes</td>
+        <td>Check: (1) System is unlocked, (2) Trading is enabled (kill switch), (3) Observe-only is OFF, (4) Tradier credentials are valid, (5) Market regime allows entries</td>
+      </tr>
+      <tr>
+        <td><strong>Container won't start</strong></td>
+        <td>Port conflict or Docker issue</td>
+        <td>Check ports 80/443 are free: <code>ss -tlnp | grep -E ':80|:443'</code>. Verify Docker is running: <code>docker info</code></td>
+      </tr>
+      <tr>
+        <td><strong>Production dropdown disabled</strong></td>
+        <td>No valid production license</td>
+        <td>Activate a license key in Settings &rarr; Production License. Keys are version-locked; after an update, request a new key from the project maintainer.</td>
+      </tr>
+      <tr>
+        <td><strong>License cleared after update</strong></td>
+        <td>Version changed</td>
+        <td>This is expected behavior. License keys are tied to a specific version. Contact the project maintainer to obtain a new key for the updated version.</td>
+      </tr>
+      <tr>
+        <td><strong>VIX data stale</strong></td>
+        <td>yfinance download failed</td>
+        <td>Check internet connectivity. VIX staleness is allowed up to 4 calendar days (covers weekends + 1 holiday). If beyond that, Tradier VIX quote is used as fallback.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box">
+    <span class="label">Tip</span>
+    <p>
+      Check container logs for detailed error information:
+    </p>
+  </div>
+  <pre><code>docker compose logs backend --tail=100
+docker compose logs caddy --tail=50
+docker compose logs frontend --tail=50</code></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- APPENDIX A: QUICK REFERENCE                                    -->
+<!-- ============================================================ -->
+<div class="chapter" id="appendixA">
+  <h1>Appendix A: Quick Reference</h1>
+
+  <h2>Emergency Controls</h2>
+  <table>
+    <thead><tr><th>Action</th><th>Location</th><th>Requirements</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Kill Switch</strong> (disable all trading)</td>
+        <td>Dashboard &rarr; Enable/Disable Trading button</td>
+        <td>Password required to enable</td>
+      </tr>
+      <tr>
+        <td><strong>Observe-Only Mode</strong></td>
+        <td>Dashboard &rarr; Observe Only button</td>
+        <td>Password required both directions</td>
+      </tr>
+      <tr>
+        <td><strong>Flatten All Positions</strong></td>
+        <td>Dashboard &rarr; Flatten All button</td>
+        <td>Kill switch must be ON + password</td>
+      </tr>
+      <tr>
+        <td><strong>Emergency Docker Stop</strong></td>
+        <td>Server command line</td>
+        <td><code>sudo systemctl stop docker</code></td>
+      </tr>
+      <tr>
+        <td><strong>Revoke All Sessions</strong></td>
+        <td>Settings &rarr; Security section</td>
+        <td>Must be logged in</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Default Parameters at a Glance</h2>
+  <table>
+    <thead><tr><th>Category</th><th>Parameter</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Position Sizing</td><td>Initial / Pyramid / Max</td><td>12% / 8% / 36%</td></tr>
+      <tr><td>Stop Loss</td><td>ATR Multiplier</td><td>3.3x</td></tr>
+      <tr><td>T1 Target</td><td>ATR Mult / Exit %</td><td>0.7x / 70%</td></tr>
+      <tr><td>T2 Target</td><td>ATR Mult / Exit %</td><td>1.5x / 20%</td></tr>
+      <tr><td>T3 Target</td><td>ATR Mult / Exit %</td><td>3.0x / 10%</td></tr>
+      <tr><td>Stepped Stop</td><td>Daily Step</td><td>0.5x ATR per day</td></tr>
+      <tr><td>Breakeven</td><td>Trigger / Cap</td><td>+1.0% / T1 - 1.0%</td></tr>
+      <tr><td>EMA Crossover</td><td>Fast / Slow</td><td>5 / 13</td></tr>
+      <tr><td>Price Movement</td><td>Max Overnight Gap</td><td>0.6x ATR</td></tr>
+      <tr><td>Slippage</td><td>Max Gap</td><td>5.0%</td></tr>
+      <tr><td>Regime</td><td>VIX Block / Allow</td><td>&ge;32 block / &lt;20 allow</td></tr>
+      <tr><td>Pyramid</td><td>Max / Min Score</td><td>2 adds / V4 &ge; 75</td></tr>
+      <tr><td>Time Stop</td><td>Hard / Stagnant</td><td>60 days / 20 days &lt;5%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Scheduler Times (Eastern)</h2>
+  <table>
+    <thead><tr><th>Time</th><th>Job</th></tr></thead>
+    <tbody>
+      <tr><td>12:30 PM</td><td>Data fetch + enrichment (Tradier + yfinance VIX, indicators, V4 scoring)</td></tr>
+      <tr><td>12:45 PM</td><td>Plan generation (7-filter cascade)</td></tr>
+      <tr><td>1:00 PM</td><td>Trade execution (bracket orders)</td></tr>
+      <tr><td>Every 2 min</td><td>Monitor cycle (fills, stops, targets)</td></tr>
+      <tr><td>Every 5 min</td><td>Reconciliation (ghosts, orphans, quantities)</td></tr>
+      <tr><td>4:05 PM</td><td>End-of-day snapshot</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Key Files</h2>
+  <table>
+    <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>setup.sh</code></td><td>First-time installation script</td></tr>
+      <tr><td><code>update.sh</code></td><td>Update script (pull, build, restart)</td></tr>
+      <tr><td><code>docker-compose.yml</code></td><td>Container orchestration</td></tr>
+      <tr><td><code>.env</code></td><td>Port configuration (gitignored)</td></tr>
+      <tr><td><code>backend/config/trading_params.json</code></td><td>Default trading parameters</td></tr>
+      <tr><td><code>backend/config/watchlist.json</code></td><td>Stock universe (64 stocks + benchmarks)</td></tr>
+      <tr><td><code>data/glyphtrader.db</code></td><td>SQLite database (bind-mounted volume)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 13: HOW WE BUILT IT                                    -->
+<!-- ============================================================ -->
+<div class="chapter" id="ch13">
+  <h1>13. How We Built It</h1>
+
+  <p>
+    glyphTrader was designed by <strong>Russell Shipe</strong> and co-developed with <strong>Claude</strong>,
+    Anthropic's AI assistant, using <strong>Claude Code</strong> (Anthropic's CLI for Claude).
+  </p>
+
+  <h2>Design Philosophy</h2>
+  <p>
+    The project followed a rigorous design-first approach: the complete BUILD_PLAN.md specification
+    (1,100+ lines) went through <strong>four rounds of design review</strong> before a single line of code
+    was written. A separate REVIEW_FINDINGS.md documented known pitfalls and bugs to avoid during implementation.
+  </p>
+
+  <h2>Build Phases</h2>
+  <table>
+    <thead><tr><th>Phase</th><th>Name</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Scaffold</td><td>Docker, Caddy, FastAPI, SQLite, JWT auth, setup.sh</td></tr>
+      <tr><td>2</td><td>Data Pipeline</td><td>Tradier client, yfinance VIX, technical indicators, V4 scoring, DataStore</td></tr>
+      <tr><td>3</td><td>Signal Engine</td><td>7-filter cascade in exact order, plan generation, entry logic</td></tr>
+      <tr><td>4</td><td>Position Management</td><td>Bracket orders, target exits, stepped stops, pyramiding, time stops</td></tr>
+      <tr><td>5</td><td>Frontend</td><td>React: Dashboard, Auto Trades, Trade History, Trade Settings, Settings</td></tr>
+      <tr><td>6</td><td>Hardening</td><td>Error handling, logging, scheduler, deployment scripts, security audit</td></tr>
+      <tr><td>7</td><td>Manual Trades</td><td>Manual Trades page, reconciliation, orphan adoption, configurable stops/targets, ratchets, hold mode, flatten all</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Key Technical Decisions</h2>
+  <ul>
+    <li><strong>Tradier-only:</strong> Unified execution and market data from a single broker, eliminating multi-vendor complexity and data reconciliation issues</li>
+    <li><strong>SQLite:</strong> Zero-configuration, portable database that ships with the application. WAL mode provides concurrent read access during writes.</li>
+    <li><strong>Docker:</strong> One-command deployment with <code>setup.sh</code>, portable across any Linux server</li>
+    <li><strong>Integer cents:</strong> Eliminates floating-point rounding errors that plague financial calculations. All arithmetic is exact.</li>
+    <li><strong>Whole shares:</strong> Tradier's GTC OCO bracket orders require whole share quantities. No fractional share workarounds needed.</li>
+    <li><strong>APScheduler inside FastAPI:</strong> No external cron jobs. The scheduler runs in the same process, ensuring coordination with the trading state machine.</li>
+  </ul>
+
+  <h2>Strategy Heritage</h2>
+  <p>
+    The TFT V4/V7 strategy was ported from a production trading system with over 6 years of backtested data.
+    The V4 scoring weights, filter cascade order, and position management rules were preserved exactly as
+    designed, with no re-optimization or curve fitting during the port.
+  </p>
+
+  <h2>Quality Assurance</h2>
+  <p>
+    The codebase was hardened through multiple comprehensive audits:
+  </p>
+  <ul>
+    <li><strong>Security review:</strong> Credential encryption, JWT handling, rate limiting, audit logging, input validation</li>
+    <li><strong>Code correctness review:</strong> V4 scoring fidelity, filter cascade order, position management math, money handling (integer cents), edge cases</li>
+    <li><strong>Live functionality testing:</strong> Tradier sandbox integration, order flow, reconciliation, recovery from restarts</li>
+    <li><strong>Data freshness audit:</strong> All 6 staleness guards verified against real-world scenarios (weekends, holidays, API failures)</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- BACK COVER                                                     -->
+<!-- ============================================================ -->
+<div class="back-cover">
+  <div class="back-logo">glyphTrader</div>
+
+  <div class="disclaimer">
+    <strong>Disclaimer</strong><br><br>
+    This software is provided &ldquo;as is&rdquo; without warranty of any kind.
+    It is <strong>not investment advice</strong>. The developers are not registered
+    investment advisers. Trading stocks involves substantial risk of loss,
+    including the potential loss of your entire investment. Past performance
+    does not guarantee future results. No trading system can guarantee profits
+    or prevent losses. You are solely responsible for all trading decisions and
+    their outcomes. See <strong>WAIVER.md</strong> for the full assumption of risk
+    and liability waiver.<br><br>
+    Licensed under the Apache License, Version 2.0.
+  </div>
+
+  <div class="cover-line" style="margin-bottom: 2em;"></div>
+
+  <div class="author-line">Written by Russell Shipe</div>
+  <div class="author-line">Co-authored by Claude (Anthropic)</div>
+  <div class="date-line" style="margin-top: 1em;">February 2026</div>
+</div>
+
+</body>
+</html>

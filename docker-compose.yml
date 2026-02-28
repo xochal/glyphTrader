@@ -1,0 +1,55 @@
+services:
+  caddy:
+    image: caddy:2.7-alpine
+    restart: unless-stopped
+    ports:
+      - "${TFT_HTTPS_PORT:-443}:443"
+      - "${TFT_HTTP_PORT:-80}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    tmpfs:
+      - /tmp
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      - DB_PATH=/app/dbdata/trading.db
+      - CORS_ORIGINS=https://localhost,https://localhost:8443,https://127.0.0.1,https://127.0.0.1:8443
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/dbdata
+      - ./VERSION:/app/VERSION:ro
+      - ./backend/config:/app/config:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs:ro
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+
+volumes:
+  caddy_data:
+  caddy_config:

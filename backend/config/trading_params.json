@@ -1,0 +1,51 @@
+{
+  "position_sizing": {
+    "initial_pct": 12.0,
+    "pyramid_pct": 8.0,
+    "max_per_stock_pct": 36.0,
+    "use_margin": false
+  },
+  "pyramid": {
+    "v4_min_pyramid_score": 75.0,
+    "max_pyramids_per_position": 2
+  },
+  "vix_sizing_brackets": [16, 22, 28, 34],
+  "vix_sizing_multipliers": [1.0, 0.8, 0.6, 0.4, 0.2],
+  "atr_exits": {
+    "stop_loss_mult": 3.3,
+    "t1_target_mult": 0.7,
+    "t2_target_mult": 1.5,
+    "t3_target_mult": 3.0,
+    "t1_exit_pct": 70,
+    "t2_exit_pct": 20,
+    "t3_exit_pct": 10
+  },
+  "stepped_stops": {
+    "enabled": true,
+    "step_size": 0.5,
+    "delay_days": 0,
+    "use_dynamic_atr": true
+  },
+  "breakeven": {
+    "offset_pct": 1.0,
+    "cap_at_t1_minus_pct": 1.0
+  },
+  "filters": {
+    "ema_fast": 5,
+    "ema_slow": 13,
+    "ema_confirmation_mode": "close_only",
+    "price_movement_atr_mult": 0.6,
+    "max_slippage_pct": 5.0,
+    "regime_vix_max": 32,
+    "regime_vix_allow_below": 20,
+    "regime_sma_period": 100,
+    "blocked_tiers": [5]
+  },
+  "time_stops": {
+    "stagnant_win_days": 20,
+    "stagnant_win_min_profit_pct": 5.0,
+    "hard_time_stop_days": 60
+  },
+  "entry_time": "13:00",
+  "entry_delay_days": 1
+}
