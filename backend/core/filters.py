@@ -50,7 +50,7 @@ def filter_ema_crossover(df: pd.DataFrame) -> Tuple[bool, str]:
 
 
 def filter_price_movement(df: pd.DataFrame, params: Dict) -> Tuple[bool, str]:
-    """Filter 3: Price Movement — 0.6x ATR overnight change limit."""
+    """Filter 3: Price Movement — 0.6x ATR change limit (prev close to current price)."""
     if len(df) < 2:
         return False, "Insufficient data for price movement"
     latest = df.iloc[-1]
@@ -59,11 +59,13 @@ def filter_price_movement(df: pd.DataFrame, params: Dict) -> Tuple[bool, str]:
     atr_val = latest.get("ATR_14", 0)
     if pd.isna(atr_val) or atr_val == 0:
         return True, ""  # Can't check, pass through
-    overnight_change = abs(latest["open"] - prev["close"])
+    # Use current price (close at scan time) vs prev close, not just overnight gap.
+    # The system scans mid-day, so open vs prev_close misses intraday moves.
+    price_change = abs(latest["close"] - prev["close"])
     max_change = atr_mult * atr_val
-    if overnight_change <= max_change:
+    if price_change <= max_change:
         return True, ""
-    return False, f"Overnight change ${overnight_change:.2f} > {atr_mult}x ATR (${max_change:.2f})"
+    return False, f"Price change ${price_change:.2f} > {atr_mult}x ATR (${max_change:.2f})"
 
 
 def filter_slippage(current_price: float, signal_price: float, params: Dict) -> Tuple[bool, str]:
