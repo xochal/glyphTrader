@@ -205,6 +205,16 @@ def job_end_of_day():
                 (vix_level, spy_above, qqq_above, allows, now),
             )
 
+            # Prune stale order_state records for closed trades
+            # (rejected/cancelled records accumulate from retry loops)
+            pruned = conn.execute(
+                "DELETE FROM order_state WHERE trade_id IN "
+                "(SELECT id FROM trades WHERE status NOT IN ('open')) "
+                "AND status IN ('rejected', 'cancelled', 'canceled')"
+            ).rowcount
+            if pruned:
+                logger.info(f"Pruned {pruned} stale order_state records from closed trades")
+
         _record_run("end_of_day")
         logger.info(f"EOD snapshot: equity=${account_value/100:.2f}, daily P&L=${daily_pnl/100:.2f}")
     except Exception as e:

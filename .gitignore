@@ -42,6 +42,7 @@ MANUAL_TRADES_PLAN.md
 # License keys and private docs (NEVER commit)
 tools/license_private_key.pem
 tools/*.pem
+tools/generate-licence
 docs/LICENSE_KEY_GENERATION.md
 
 # GitHub token (for push access, NEVER commit)

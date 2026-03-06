@@ -72,17 +72,18 @@ def calculate_target_price(entry_cents: int, mode: str, value: float, atr: float
 
 
 def calculate_ratchet_stop(high_cents: int, mode: str, value: float, atr: float, current_stop_cents: int) -> int:
-    """Calculate trailing ratchet stop. Only ratchets UP, never down."""
+    """Calculate daily additive ratchet stop. Raises current stop by value each day.
+    Only ratchets UP, never down. Caller must cap vs current price."""
     _validate_mode(mode)
 
     if mode == "atr":
         _validate_atr(atr)
         atr_cents = round(atr * 100)
-        new_stop = high_cents - round(value * atr_cents)
+        new_stop = current_stop_cents + round(value * atr_cents)
     elif mode == "dollar":
-        new_stop = high_cents - round(value * 100)
+        new_stop = current_stop_cents + round(value * 100)
     elif mode == "percent":
-        new_stop = round(high_cents * (1 - value / 100))
+        new_stop = current_stop_cents + round(current_stop_cents * value / 100)
 
     if new_stop <= 0:
         return current_stop_cents

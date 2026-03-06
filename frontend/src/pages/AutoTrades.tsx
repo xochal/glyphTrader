@@ -21,11 +21,27 @@ export default function AutoTrades() {
   const [positions, setPositions] = useState<any[]>([]);
   const [signals, setSignals] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
+  const [orders, setOrders] = useState<Record<string, any[]>>({});
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+
+  const toggleRow = (id: number) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const orderTypeLabel = (t: string) => {
+    const map: Record<string, string> = { stop: 'Stop', t1_oco: 'T1 OCO', t2_oco: 'T2 OCO', t3_oco: 'T3 OCO', entry: 'Entry', bracket: 'Bracket' };
+    return map[t] || t;
+  };
 
   const loadData = () => {
     api.get('/dashboard/positions?trade_type=auto').then(r => setPositions(r.data.positions)).catch(() => {});
     api.get('/dashboard/signals').then(r => setSignals(r.data.signals)).catch(() => {});
     api.get('/trades/stats?trade_type=auto').then(r => setStats(r.data)).catch(() => {});
+    api.get('/dashboard/orders?trade_type=auto').then(r => setOrders(r.data.orders_by_trade)).catch(() => {});
   };
 
   useEffect(() => {
@@ -58,17 +74,28 @@ export default function AutoTrades() {
             <table style={s.table}>
               <thead>
                 <tr>
+                  <th style={{ ...s.th, width: '32px', padding: '8px 4px' }}></th>
                   <th style={s.th}>Symbol</th><th style={s.th}>Shares</th><th style={s.th}>Entry</th>
-                  <th style={s.th}>Stop</th><th style={s.th}>T1</th><th style={s.th}>T2</th>
+                  <th style={s.th}>Price</th><th style={s.th}>Stop</th><th style={s.th}>T1</th><th style={s.th}>T2</th>
                   <th style={s.th}>T3</th><th style={s.th}>State</th><th style={s.th}>Days</th><th style={s.th}>Pyramids</th>
                 </tr>
               </thead>
               <tbody>
-                {positions.map((p: any) => (
-                  <tr key={p.id}>
+                {positions.map((p: any) => {
+                  const tradeOrders = orders[String(p.id)] || [];
+                  const hasCoverage = tradeOrders.length > 0;
+                  const isExpanded = expandedRows.has(p.id);
+                  return (
+                  <React.Fragment key={p.id}>
+                  <tr style={{ cursor: 'pointer' }} onClick={() => toggleRow(p.id)}>
+                    <td style={{ ...s.td, padding: '8px 4px', textAlign: 'center' }}>
+                      <span style={{ color: hasCoverage ? '#00d4aa' : '#ff4444', marginRight: '4px', fontSize: '8px' }}>&#9679;</span>
+                      <span style={{ color: '#666', fontSize: '11px' }}>{isExpanded ? '\u25BC' : '\u25B6'}</span>
+                    </td>
                     <td style={{ ...s.td, fontWeight: 'bold', color: '#00d4aa' }}>{p.symbol}</td>
                     <td style={s.td}>{p.shares_remaining}/{p.shares}</td>
                     <td style={s.td}>${p.blended_entry_price ?? p.entry_price}</td>
+                    <td style={{ ...s.td, color: p.current_price && (p.blended_entry_price ?? p.entry_price) ? (p.current_price >= (p.blended_entry_price ?? p.entry_price) ? '#00d4aa' : '#ff4444') : undefined }}>{p.current_price ? `$${p.current_price}` : '-'}</td>
                     <td style={s.td}>${p.stop_price}</td>
                     <td style={{ ...s.td, color: p.t1_filled ? '#00d4aa' : '#666' }}>${p.target_t1}</td>
                     <td style={{ ...s.td, color: p.t2_filled ? '#00d4aa' : '#666' }}>${p.target_t2}</td>
@@ -77,7 +104,41 @@ export default function AutoTrades() {
                     <td style={s.td}>{p.days_held ?? '-'}</td>
                     <td style={s.td}>{p.pyramid_count}</td>
                   </tr>
-                ))}
+                  {isExpanded && (
+                    <tr>
+                      <td colSpan={12} style={{ padding: '0 12px 12px 36px', background: '#12122a' }}>
+                        {tradeOrders.length === 0 ? (
+                          <div style={{ color: '#ff4444', fontSize: '12px', padding: '8px 0' }}>No open orders — position may be unprotected</div>
+                        ) : (
+                          <table style={{ ...s.table, fontSize: '12px', marginTop: '4px' }}>
+                            <thead>
+                              <tr>
+                                <th style={{ ...s.th, fontSize: '10px' }}>Type</th>
+                                <th style={{ ...s.th, fontSize: '10px' }}>Shares</th>
+                                <th style={{ ...s.th, fontSize: '10px' }}>Price</th>
+                                <th style={{ ...s.th, fontSize: '10px' }}>Tradier ID</th>
+                                <th style={{ ...s.th, fontSize: '10px' }}>Updated</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {tradeOrders.map((o: any) => (
+                                <tr key={o.order_id}>
+                                  <td style={s.td}>{orderTypeLabel(o.order_type)}</td>
+                                  <td style={s.td}>{o.shares}</td>
+                                  <td style={s.td}>{o.price != null ? `$${o.price}` : '-'}</td>
+                                  <td style={{ ...s.td, color: '#666' }}>{o.order_id}</td>
+                                  <td style={{ ...s.td, color: '#666' }}>{o.updated_at?.slice(0, 16).replace('T', ' ')}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                  </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
             </div>

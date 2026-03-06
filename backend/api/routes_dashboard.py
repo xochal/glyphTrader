@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from api.auth import verify_jwt
 from db.database import get_db
 from db import crypto
+from data.datastore import DataStore
 
 logger = logging.getLogger("glyphTrader.api.dashboard")
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
@@ -32,7 +33,20 @@ def get_positions(user: str = Depends(verify_jwt), trade_type: Optional[str] = Q
 
     with get_db() as conn:
         rows = conn.execute(query, params).fetchall()
+        # Pre-load last candle closes as fallback when DataStore is empty (e.g. after hours)
+        symbols = [r["symbol"] for r in rows]
+        candle_prices = {}
+        if symbols:
+            placeholders = ",".join("?" for _ in symbols)
+            candle_rows = conn.execute(
+                f"SELECT symbol, close FROM candles WHERE (symbol, date) IN "
+                f"(SELECT symbol, MAX(date) FROM candles WHERE symbol IN ({placeholders}) GROUP BY symbol)",
+                symbols,
+            ).fetchall()
+            for cr in candle_rows:
+                candle_prices[cr["symbol"]] = round(float(cr["close"]), 2)
     now = datetime.now(timezone.utc)
+    store = DataStore()
     positions = []
     for r in rows:
         days_held = None
@@ -66,6 +80,13 @@ def get_positions(user: str = Depends(verify_jwt), trade_type: Optional[str] = Q
             "days_held": days_held,
             "original_atr": _cents_to_dollars(r["original_atr_cents"]),
         }
+
+        # Current price: DataStore (live) -> candles table (last close) -> None
+        latest = store.get_latest_indicators(r["symbol"])
+        if latest and "close" in latest:
+            pos["current_price"] = round(float(latest["close"]), 2)
+        else:
+            pos["current_price"] = candle_prices.get(r["symbol"])
 
         # Include manual trade fields if present
         if trade_type_val == "manual":
@@ -118,9 +139,24 @@ def get_stats(user: str = Depends(verify_jwt)):
             "SELECT * FROM portfolio_snapshots ORDER BY date DESC LIMIT 1"
         ).fetchone()
 
-    account_value = _cents_to_dollars(latest_snap["account_value_cents"]) if latest_snap else None
-    cash = _cents_to_dollars(latest_snap["cash_cents"]) if latest_snap else None
+    # Try live balances from Tradier, fall back to last snapshot
+    account_value = None
+    cash = None
     daily_pnl = _cents_to_dollars(latest_snap["daily_pnl_cents"]) if latest_snap else None
+    try:
+        from tradier.execution import _get_tradier_client
+        client = _get_tradier_client()
+        balances = client.get_balances()
+        account_value = round(float(balances.get("total_equity", 0)), 2)
+        cash = round(float(balances.get("total_cash", 0)), 2)
+        # Recalculate daily P&L from live equity vs last snapshot
+        if latest_snap:
+            snap_value = latest_snap["account_value_cents"] or 0
+            daily_pnl = round((account_value * 100 - snap_value) / 100, 2)
+    except Exception as e:
+        logger.debug(f"Live balances unavailable, using snapshot: {e}")
+        account_value = _cents_to_dollars(latest_snap["account_value_cents"]) if latest_snap else None
+        cash = _cents_to_dollars(latest_snap["cash_cents"]) if latest_snap else None
 
     return {
         "open_positions": open_count,
@@ -160,6 +196,38 @@ def get_todays_signals(user: str = Depends(verify_jwt)):
             "shares": r["shares"],
         })
     return {"date": today, "signals": signals}
+
+
+@router.get("/orders")
+def get_open_orders(user: str = Depends(verify_jwt), trade_type: Optional[str] = Query(None)):
+    query = """
+        SELECT os.trade_id, os.order_id, os.order_type, os.shares,
+               os.price_cents, os.status, os.updated_at
+        FROM order_state os
+        JOIN trades t ON t.id = os.trade_id
+        WHERE t.status = 'open' AND os.status = 'open'
+    """
+    params = []
+    if trade_type in ("auto", "manual"):
+        query += " AND t.trade_type = ?"
+        params.append(trade_type)
+    query += " ORDER BY os.trade_id, os.order_type"
+
+    with get_db() as conn:
+        rows = conn.execute(query, params).fetchall()
+
+    orders_by_trade: dict[str, list] = {}
+    for r in rows:
+        tid = str(r["trade_id"])
+        orders_by_trade.setdefault(tid, []).append({
+            "order_id": r["order_id"],
+            "order_type": r["order_type"],
+            "shares": r["shares"],
+            "price": _cents_to_dollars(r["price_cents"]),
+            "status": r["status"],
+            "updated_at": r["updated_at"],
+        })
+    return {"orders_by_trade": orders_by_trade}
 
 
 @router.get("/regime")

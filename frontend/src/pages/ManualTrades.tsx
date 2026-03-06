@@ -35,6 +35,8 @@ export default function ManualTrades() {
   const [orphans, setOrphans] = useState<any[]>([]);
   const [positions, setPositions] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
+  const [orders, setOrders] = useState<Record<string, any[]>>({});
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'adopt' | 'edit'>('adopt');
   const [selectedOrphan, setSelectedOrphan] = useState<any>(null);
@@ -42,10 +44,24 @@ export default function ManualTrades() {
   const [atr, setAtr] = useState<number | null>(null);
   const [observeOnly, setObserveOnly] = useState(false);
 
+  const toggleRow = (id: number) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const orderTypeLabel = (t: string) => {
+    const map: Record<string, string> = { stop: 'Stop', t1_oco: 'T1 OCO', t2_oco: 'T2 OCO', t3_oco: 'T3 OCO', entry: 'Entry', bracket: 'Bracket' };
+    return map[t] || t;
+  };
+
   const loadData = () => {
     api.get('/manual-trades/orphans').then(r => setOrphans(r.data.orphans)).catch(() => {});
     api.get('/dashboard/positions?trade_type=manual').then(r => setPositions(r.data.positions)).catch(() => {});
     api.get('/trades/stats?trade_type=manual').then(r => setStats(r.data)).catch(() => {});
+    api.get('/dashboard/orders?trade_type=manual').then(r => setOrders(r.data.orders_by_trade)).catch(() => {});
   };
 
   const loadAll = () => {
@@ -217,6 +233,7 @@ export default function ManualTrades() {
             <table style={s.table}>
               <thead>
                 <tr>
+                  <th style={{ ...s.th, width: '32px', padding: '8px 4px' }}></th>
                   <th style={s.th}>Symbol</th><th style={s.th}>Shares</th><th style={s.th}>Entry</th>
                   <th style={s.th}>Stop</th><th style={s.th}>T1</th><th style={s.th}>Mode</th>
                   <th style={s.th}>State</th><th style={s.th}>Days</th><th style={s.th}>Actions</th>
@@ -226,8 +243,16 @@ export default function ManualTrades() {
                 {positions.map((p: any) => {
                   const modeBadge = getModeBadge(p);
                   const isHold = !p.targets_enabled;
+                  const tradeOrders = orders[String(p.id)] || [];
+                  const hasCoverage = tradeOrders.length > 0;
+                  const isExpanded = expandedRows.has(p.id);
                   return (
-                    <tr key={p.id}>
+                    <React.Fragment key={p.id}>
+                    <tr style={{ cursor: 'pointer' }} onClick={() => toggleRow(p.id)}>
+                      <td style={{ ...s.td, padding: '8px 4px', textAlign: 'center' }}>
+                        <span style={{ color: hasCoverage ? '#00d4aa' : '#ff4444', marginRight: '4px', fontSize: '8px' }}>&#9679;</span>
+                        <span style={{ color: '#666', fontSize: '11px' }}>{isExpanded ? '\u25BC' : '\u25B6'}</span>
+                      </td>
                       <td style={{ ...s.td, fontWeight: 'bold', color: '#00d4aa' }}>{p.symbol}</td>
                       <td style={s.td}>{p.shares_remaining}/{p.shares}</td>
                       <td style={s.td}>${p.blended_entry_price ?? p.entry_price}</td>
@@ -240,19 +265,52 @@ export default function ManualTrades() {
                       <td style={s.td}>{p.days_held ?? '-'}</td>
                       <td style={s.td}>
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', ...(observeOnly ? { opacity: 0.4 } : {}) }}>
-                          <button style={s.btnEdit} disabled={observeOnly} onClick={() => handleEditClick(p)}>Edit</button>
+                          <button style={s.btnEdit} disabled={observeOnly} onClick={(e) => { e.stopPropagation(); handleEditClick(p); }}>Edit</button>
                           <button
                             style={{ ...s.btnDismiss, color: isHold ? '#00d4aa' : '#ffaa00', borderColor: isHold ? '#00d4aa' : '#ffaa00' }}
                             disabled={observeOnly}
-                            onClick={() => handleHoldToggle(p.id, isHold)}
+                            onClick={(e) => { e.stopPropagation(); handleHoldToggle(p.id, isHold); }}
                           >
                             {isHold ? 'Targets' : 'Hold'}
                           </button>
-                          <button style={s.btnClose} disabled={observeOnly} onClick={() => handleClose(p.id, p.symbol)}>Close</button>
-                          <button style={s.btnRelease} disabled={observeOnly} onClick={() => handleRelease(p.id, p.symbol)}>Release</button>
+                          <button style={s.btnClose} disabled={observeOnly} onClick={(e) => { e.stopPropagation(); handleClose(p.id, p.symbol); }}>Close</button>
+                          <button style={s.btnRelease} disabled={observeOnly} onClick={(e) => { e.stopPropagation(); handleRelease(p.id, p.symbol); }}>Release</button>
                         </div>
                       </td>
                     </tr>
+                    {isExpanded && (
+                      <tr>
+                        <td colSpan={10} style={{ padding: '0 12px 12px 36px', background: '#12122a' }}>
+                          {tradeOrders.length === 0 ? (
+                            <div style={{ color: '#ff4444', fontSize: '12px', padding: '8px 0' }}>No open orders — position may be unprotected</div>
+                          ) : (
+                            <table style={{ ...s.table, fontSize: '12px', marginTop: '4px' }}>
+                              <thead>
+                                <tr>
+                                  <th style={{ ...s.th, fontSize: '10px' }}>Type</th>
+                                  <th style={{ ...s.th, fontSize: '10px' }}>Shares</th>
+                                  <th style={{ ...s.th, fontSize: '10px' }}>Price</th>
+                                  <th style={{ ...s.th, fontSize: '10px' }}>Tradier ID</th>
+                                  <th style={{ ...s.th, fontSize: '10px' }}>Updated</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {tradeOrders.map((o: any) => (
+                                  <tr key={o.order_id}>
+                                    <td style={s.td}>{orderTypeLabel(o.order_type)}</td>
+                                    <td style={s.td}>{o.shares}</td>
+                                    <td style={s.td}>{o.price != null ? `$${o.price}` : '-'}</td>
+                                    <td style={{ ...s.td, color: '#666' }}>{o.order_id}</td>
+                                    <td style={{ ...s.td, color: '#666' }}>{o.updated_at?.slice(0, 16).replace('T', ' ')}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   );
                 })}
               </tbody>

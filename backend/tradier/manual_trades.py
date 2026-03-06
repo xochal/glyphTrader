@@ -547,7 +547,8 @@ def _cancel_all_orders(client, conn, trade_id: int, now: str):
 
 
 def _cancel_and_replace_stops(client, conn, trade_id: int, symbol: str, new_stop_cents: int, shares: int, now: str):
-    """Cancel existing stop orders and place new one at updated price."""
+    """Cancel existing stop/OCO orders and re-place with updated stop price, preserving OCO structure."""
+    trade = conn.execute("SELECT * FROM trades WHERE id = ?", (trade_id,)).fetchone()
     orders = conn.execute(
         "SELECT * FROM order_state WHERE trade_id = ? AND status = 'open' AND order_type IN ('stop', 't1_oco', 't2_oco', 't3_oco')",
         (trade_id,),
@@ -564,11 +565,27 @@ def _cancel_and_replace_stops(client, conn, trade_id: int, symbol: str, new_stop
             (now, order["id"]),
         )
 
-    # Place new stop
-    result = client.place_stop_order(symbol, "sell", shares, new_stop_cents / 100)
-    order_id = str(result.get("id", ""))
-    conn.execute(
-        "INSERT INTO order_state (trade_id, order_id, order_type, shares, price_cents, status, created_at, updated_at) "
-        "VALUES (?, ?, 'stop', ?, ?, 'open', ?, ?)",
-        (trade_id, order_id, shares, new_stop_cents, now, now),
-    )
+    # Re-place orders preserving OCO structure
+    targets_enabled = bool(trade["targets_enabled"]) if trade and "targets_enabled" in trade.keys() else False
+
+    if targets_enabled and trade:
+        # Re-place full bracket structure: OCO for T1 shares + stop for remainder
+        dist = {
+            "t1_shares": trade["t1_shares"] or 0,
+            "t2_shares": trade["t2_shares"] or 0,
+            "t3_shares": trade["t3_shares"] or 0,
+        }
+        _place_manual_orders(
+            client, trade_id, symbol, shares, new_stop_cents,
+            trade["target_t1_price_cents"], trade["target_t2_price_cents"],
+            trade["target_t3_price_cents"], dist, True,
+        )
+    else:
+        # Hold mode: plain stop only
+        result = client.place_stop_order(symbol, "sell", shares, new_stop_cents / 100)
+        order_id = str(result.get("id", ""))
+        conn.execute(
+            "INSERT INTO order_state (trade_id, order_id, order_type, shares, price_cents, status, created_at, updated_at) "
+            "VALUES (?, ?, 'stop', ?, ?, 'open', ?, ?)",
+            (trade_id, order_id, shares, new_stop_cents, now, now),
+        )
