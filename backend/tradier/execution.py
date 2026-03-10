@@ -6,8 +6,12 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List
 
+import pandas as pd
+
 from config.config_loader import get_trading_params
+from core.filters import filter_sector
 from core.position_sizer import calculate_position_size, calculate_exit_prices, calculate_share_distribution
+from core.regime import check_regime, get_benchmark_index
 from data.datastore import DataStore
 from db.database import get_db
 from db import crypto
@@ -181,11 +185,54 @@ def execute_signals(signals: List[Dict]) -> int:
     if vix_level is None or store.is_vix_stale():
         logger.warning(f"VIX missing or stale — skipping new entries (time stops still processed)")
         return 0
+
+    # Fetch live benchmark quotes for regime re-check
+    live_benchmarks = {}
+    try:
+        bench_quotes = client.get_quotes(["SPY", "QQQ"])
+        for q in bench_quotes:
+            sym = q.get("symbol")
+            last_price = q.get("last")
+            if sym and last_price:
+                live_benchmarks[sym] = float(last_price)
+        if live_benchmarks:
+            logger.info(f"Regime recheck: live benchmarks {live_benchmarks}")
+    except Exception as e:
+        logger.warning(f"Failed to fetch live benchmarks for regime recheck: {e}")
+
     entries = 0
 
     for signal in signals:
         symbol = signal["symbol"]
         price_cents = signal["entry_price_cents"]
+
+        # Re-check regime with live benchmark price
+        if live_benchmarks:
+            bench = get_benchmark_index(symbol)
+            if bench in live_benchmarks:
+                index_data = store.get_index_data(bench)
+                if index_data is not None and not index_data.empty:
+                    sma_100 = index_data["SMA_100"].iloc[-1]
+                    if pd.notna(sma_100):
+                        live_regime = check_regime(vix_level, live_benchmarks[bench], float(sma_100))
+                        if signal.get("action") == "buy" and not live_regime["allows_entry"]:
+                            logger.info(f"REGIME RECHECK: blocking {symbol} — {live_regime['reason']}")
+                            continue
+                        if signal.get("action") == "skip":
+                            if not live_regime["allows_entry"]:
+                                continue  # Still blocked
+                            # Regime flipped favorable — check sector filter before promoting
+                            sector_ok, sector_reason = filter_sector(symbol)
+                            if not sector_ok:
+                                logger.info(f"REGIME RECHECK: {symbol} regime OK but {sector_reason}")
+                                continue
+                            logger.info(f"REGIME RECHECK: promoting {symbol} (V4={signal.get('v4_score', 0):.1f}) — {live_regime['reason']}")
+                            signal["action"] = "buy"
+
+        # Skip signals not promoted by regime recheck
+        if signal.get("action") == "skip":
+            continue
+
         atr_cents = signal.get("stop_price_cents", 0)
 
         # Check for existing auto position (pyramid check)

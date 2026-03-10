@@ -108,7 +108,9 @@ def job_execute_trades():
         today = datetime.now(ET).strftime("%Y-%m-%d")
         with get_db() as conn:
             plans = conn.execute(
-                "SELECT * FROM daily_plans WHERE date = ? AND action = 'buy' ORDER BY v4_score DESC",
+                "SELECT * FROM daily_plans WHERE date = ? AND "
+                "(action = 'buy' OR (action = 'skip' AND skip_reason LIKE 'Regime:%')) "
+                "ORDER BY v4_score DESC",
                 (today,),
             ).fetchall()
 
